@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng ký</title>
+  <link rel="stylesheet" href="../assets/css/auth.css" />
+</head>
+<body>
+  <div class="auth-container">
+    <h2>Đăng ký tài khoản</h2>
+    <form id="registerForm">
+      <input type="text" id="username" placeholder="Tên đăng nhập" required />
+      <input type="password" id="password" placeholder="Mật khẩu" required />
+      <button type="submit">Đăng ký</button>
+    </form>
+    <p>Đã có tài khoản? <a href="login.html">Đăng nhập</a></p>
+  </div>
+
+  <script>
+    const registerForm = document.getElementById("registerForm");
+
+    registerForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      if (localStorage.getItem(username)) {
+        alert("Tên đăng nhập đã tồn tại!");
+        return;
+      }
+
+      const user = { username, password };
+      localStorage.setItem(username, JSON.stringify(user));
+      alert("Đăng ký thành công! Mời đăng nhập.");
+      window.location.href = "login.html";
+    });
+  </script>
+</body>
+</html>

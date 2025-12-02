@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bakery Admin Dashboard</title>
+  <link rel="stylesheet" href="../assets/css/index.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- JS riêng biệt -->
+  <script src="../assets/js/index.js"></script>
+  <script src="../assets/js/dashboard.js"></script>
+  <script src="../assets/js/orders.js"></script>
+  <script src="../assets/js/products.js"></script>
+  <script src="../assets/js/customers.js"></script>
+  <script src="../assets/js/reports.js"></script>
+  <script src="../assets/js/discounts.js"></script>
+  <script src="../assets/js/integrations.js"></script>
+  <script src="../assets/js/help.js"></script>
+  <script src="../assets/js/settings.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>🍞 Bakery Admin</h2>
+      <ul class="list-menu">
+        <li><a href="#" onclick="showPage('dashboard')">Dashboard</a></li>
+        <li><a href="#" onclick="showPage('orders')">Orders</a></li>
+        <li><a href="#" onclick="showPage('products')">Products</a></li>
+        <li><a href="#" onclick="showPage('customers')">Customers</a></li>
+        <li><a href="#" onclick="showPage('reports')">Reports</a></li>
+        <li><a href="#" onclick="showPage('discounts')">Discounts</a></li>
+      </ul>
+      <ul class="list-connect">
+        <li><a href="#" onclick="showPage('integrations')">Integrations</a></li>
+        <li><a href="#" onclick="showPage('help')">Help</a></li>
+        <li><a href="#" onclick="showPage('settings')">Settings</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="content"></main>
+  </div>
+</body>
+</html>
