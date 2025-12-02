@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="60dp"
+    android:height="60dp"
+    android:viewportWidth="60"
+    android:viewportHeight="60">
+
+    <!-- Background circle -->
+    <path
+        android:fillColor="#FFF3E0"
+        android:pathData="M30,30m-25,0a25,25 0,1 1,50 0a25,25 0,1 1,-50 0" />
+
+    <!-- Bánh mì icon -->
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M15,25 L45,25 L45,35 L15,35 Z" />
+
+    <!-- Bánh mì top -->
+    <path
+        android:fillColor="#D7CCC8"
+        android:pathData="M15,20 L45,20 L45,25 L15,25 Z" />
+
+    <!-- Bánh mì bottom -->
+    <path
+        android:fillColor="#D7CCC8"
+        android:pathData="M15,35 L45,35 L45,40 L15,40 Z" />
+
+    <!-- Seeds -->
+    <path
+        android:fillColor="#5D4037"
+        android:pathData="M20,30 L22,30 L22,32 L20,32 Z" />
+    <path
+        android:fillColor="#5D4037"
+        android:pathData="M30,30 L32,30 L32,32 L30,32 Z" />
+    <path
+        android:fillColor="#5D4037"
+        android:pathData="M40,30 L42,30 L42,32 L40,32 Z" />
+</vector>

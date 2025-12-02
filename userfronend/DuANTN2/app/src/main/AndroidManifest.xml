@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.duantn">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.DuANTN"
+        tools:targetApi="31">
+
+        <!--  Màn hình đăng nhập: LAUNCHER -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true"
+            android:label="Đăng nhập">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--  Màn hình đăng ký -->
+        <activity
+            android:name=".SignActivity"
+            android:exported="false"
+            android:label="Đăng ký" />
+
+        <!--  Màn hình chính: không còn là LAUNCHER -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.DuANTN" />
+
+        <!--  Màn hình chi tiết món ăn -->
+        <activity
+            android:name=".FoodDetailActivity"
+            android:exported="false"
+            android:label="Chi tiết món ăn" />
+
+        <!-- Màn hình giỏ hàng -->
+        <activity
+            android:name=".CartActivity"
+            android:exported="false"
+            android:label="Giỏ hàng" />
+
+        <!--  Màn hình thanh toán -->
+        <activity
+            android:name=".PaymentActivity"
+            android:exported="false"
+            android:label="Thanh toán" />
+
+        <!--  Màn hình thành công -->
+        <activity
+            android:name=".OrderSuccessActivity"
+            android:exported="false"
+            android:label="Đặt hàng thành công" />
+
+        <!--  Màn hình thông báo -->
+        <activity
+            android:name=".NotificationsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <!--  Màn hình đơn hàng -->
+        <activity
+            android:name=".OrdersActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <!--  Màn hình cài đặt -->
+        <activity
+            android:name=".SettingsActivity" />
+
+    </application>
+
+</manifest>
