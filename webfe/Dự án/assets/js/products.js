@@ -73,6 +73,78 @@ function renderProductsPage() {
                 <button class="btn-delete">Xóa</button>
               </td>
             </tr>
+            <tr>
+              <td><img src="../assets/images/cake1.jpg" alt="Bánh kem dâu"></td>
+              <td>Bánh valentine</td>
+              <td>Bánh ngọt</td>
+              <td>150.000đ</td>
+              <td>0</td>
+              <td><span class="status pending">Hết hàng</span></td>
+              <td>
+                <button class="btn-edit">Sửa</button>
+                <button class="btn-delete">Xóa</button>
+              </td>
+            </tr>
+            <tr>
+              <td><img src="../assets/images/cake1.jpg" alt="Bánh kem dâu"></td>
+              <td>Bánh valentine</td>
+              <td>Bánh ngọt</td>
+              <td>150.000đ</td>
+              <td>0</td>
+              <td><span class="status pending">Hết hàng</span></td>
+              <td>
+                <button class="btn-edit">Sửa</button>
+                <button class="btn-delete">Xóa</button>
+              </td>
+            </tr>
+            <tr>
+              <td><img src="../assets/images/cake1.jpg" alt="Bánh kem dâu"></td>
+              <td>Bánh valentine</td>
+              <td>Bánh ngọt</td>
+              <td>150.000đ</td>
+              <td>0</td>
+              <td><span class="status pending">Hết hàng</span></td>
+              <td>
+                <button class="btn-edit">Sửa</button>
+                <button class="btn-delete">Xóa</button>
+              </td>
+            </tr>
+            <tr>
+              <td><img src="../assets/images/cake1.jpg" alt="Bánh kem dâu"></td>
+              <td>Bánh valentine</td>
+              <td>Bánh ngọt</td>
+              <td>150.000đ</td>
+              <td>0</td>
+              <td><span class="status pending">Hết hàng</span></td>
+              <td>
+                <button class="btn-edit">Sửa</button>
+                <button class="btn-delete">Xóa</button>
+              </td>
+            </tr>
+            <tr>
+              <td><img src="../assets/images/cake1.jpg" alt="Bánh kem dâu"></td>
+              <td>Bánh valentine</td>
+              <td>Bánh ngọt</td>
+              <td>150.000đ</td>
+              <td>0</td>
+              <td><span class="status pending">Hết hàng</span></td>
+              <td>
+                <button class="btn-edit">Sửa</button>
+                <button class="btn-delete">Xóa</button>
+              </td>
+            </tr>
+            <tr>
+              <td><img src="../assets/images/cake1.jpg" alt="Bánh kem dâu"></td>
+              <td>Bánh valentine</td>
+              <td>Bánh ngọt</td>
+              <td>150.000đ</td>
+              <td>0</td>
+              <td><span class="status pending">Hết hàng</span></td>
+              <td>
+                <button class="btn-edit">Sửa</button>
+                <button class="btn-delete">Xóa</button>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>

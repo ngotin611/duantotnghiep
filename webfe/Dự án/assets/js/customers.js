@@ -58,6 +58,78 @@ function renderCustomersPage() {
               <button class="btn-delete">Xóa</button>
             </td>
           </tr>
+          <tr>
+            <td>KH003</td>
+            <td>Lê Văn C</td>
+            <td>vanc@example.com</td>
+            <td>0987654321</td>
+            <td>89 Hai Bà Trưng, Hà Nội</td>
+            <td><span class="status success">Hoạt động</span></td>
+            <td>
+              <button class="btn-edit">Sửa</button>
+              <button class="btn-delete">Xóa</button>
+            </td>
+          </tr>
+          <tr>
+            <td>KH003</td>
+            <td>Lê Văn C</td>
+            <td>vanc@example.com</td>
+            <td>0987654321</td>
+            <td>89 Hai Bà Trưng, Hà Nội</td>
+            <td><span class="status success">Hoạt động</span></td>
+            <td>
+              <button class="btn-edit">Sửa</button>
+              <button class="btn-delete">Xóa</button>
+            </td>
+          </tr>
+          <tr>
+            <td>KH003</td>
+            <td>Lê Văn C</td>
+            <td>vanc@example.com</td>
+            <td>0987654321</td>
+            <td>89 Hai Bà Trưng, Hà Nội</td>
+            <td><span class="status success">Hoạt động</span></td>
+            <td>
+              <button class="btn-edit">Sửa</button>
+              <button class="btn-delete">Xóa</button>
+            </td>
+          </tr>
+          <tr>
+            <td>KH003</td>
+            <td>Lê Văn C</td>
+            <td>vanc@example.com</td>
+            <td>0987654321</td>
+            <td>89 Hai Bà Trưng, Hà Nội</td>
+            <td><span class="status success">Hoạt động</span></td>
+            <td>
+              <button class="btn-edit">Sửa</button>
+              <button class="btn-delete">Xóa</button>
+            </td>
+          </tr>
+          <tr>
+            <td>KH003</td>
+            <td>Lê Văn C</td>
+            <td>vanc@example.com</td>
+            <td>0987654321</td>
+            <td>89 Hai Bà Trưng, Hà Nội</td>
+            <td><span class="status success">Hoạt động</span></td>
+            <td>
+              <button class="btn-edit">Sửa</button>
+              <button class="btn-delete">Xóa</button>
+            </td>
+          </tr>
+          <tr>
+            <td>KH003</td>
+            <td>Lê Văn C</td>
+            <td>vanc@example.com</td>
+            <td>0987654321</td>
+            <td>89 Hai Bà Trưng, Hà Nội</td>
+            <td><span class="status success">Hoạt động</span></td>
+            <td>
+              <button class="btn-edit">Sửa</button>
+              <button class="btn-delete">Xóa</button>
+            </td>
+          </tr>
         </tbody>
       </table>
     </section>
