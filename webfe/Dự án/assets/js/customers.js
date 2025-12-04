@@ -24,10 +24,10 @@ function renderCustomersPage() {
         <tbody>
           <tr>
             <td>KH001</td>
-            <td>Nguyễn Văn A</td>
-            <td>vana@example.com</td>
-            <td>0901234567</td>
-            <td>123 Lê Lợi, TP.HCM</td>
+            <td>Nguyễn Văn Đồng Bằng</td>
+            <td>vanbang@example.com</td>
+            <td>0263485394</td>
+            <td>123 Lê Lợi, Đà Nẵng</td>
             <td><span class="status success">Hoạt động</span></td>
             <td>
               <button class="btn-edit">Sửa</button>
@@ -36,22 +36,10 @@ function renderCustomersPage() {
           </tr>
           <tr>
             <td>KH002</td>
-            <td>Trần Thị B</td>
-            <td>thib@example.com</td>
-            <td>0934567890</td>
-            <td>45 Nguyễn Huệ, TP.HCM</td>
-            <td><span class="status warning">Tạm khóa</span></td>
-            <td>
-              <button class="btn-edit">Sửa</button>
-              <button class="btn-delete">Xóa</button>
-            </td>
-          </tr>
-          <tr>
-            <td>KH003</td>
-            <td>Lê Văn C</td>
-            <td>vanc@example.com</td>
-            <td>0987654321</td>
-            <td>89 Hai Bà Trưng, Hà Nội</td>
+            <td>Phạm Quang Đạt</td>
+            <td>dat01062004@example.com</td>
+            <td>0359904840</td>
+            <td>554 Điện Biên Phủ, Đà Nẵng</td>
             <td><span class="status success">Hoạt động</span></td>
             <td>
               <button class="btn-edit">Sửa</button>
@@ -60,10 +48,10 @@ function renderCustomersPage() {
           </tr>
           <tr>
             <td>KH003</td>
-            <td>Lê Văn C</td>
-            <td>vanc@example.com</td>
-            <td>0987654321</td>
-            <td>89 Hai Bà Trưng, Hà Nội</td>
+            <td>Nguyễn Văn Quang</td>
+            <td>quang0862@example.com</td>
+            <td>0862340391</td>
+            <td>47/55 Huỳnh Ngọc Huệ, Đà Nẵng</td>
             <td><span class="status success">Hoạt động</span></td>
             <td>
               <button class="btn-edit">Sửa</button>
@@ -71,11 +59,11 @@ function renderCustomersPage() {
             </td>
           </tr>
           <tr>
-            <td>KH003</td>
-            <td>Lê Văn C</td>
-            <td>vanc@example.com</td>
-            <td>0987654321</td>
-            <td>89 Hai Bà Trưng, Hà Nội</td>
+            <td>KH004</td>
+            <td>Huỳnh Ngọc Vỹ</td>
+            <td>vy2602@example.com</td>
+            <td>0393983249</td>
+            <td>108 Phạm Đình Hổ, Đà Nẵng</td>
             <td><span class="status success">Hoạt động</span></td>
             <td>
               <button class="btn-edit">Sửa</button>
@@ -83,11 +71,11 @@ function renderCustomersPage() {
             </td>
           </tr>
           <tr>
-            <td>KH003</td>
-            <td>Lê Văn C</td>
-            <td>vanc@example.com</td>
-            <td>0987654321</td>
-            <td>89 Hai Bà Trưng, Hà Nội</td>
+            <td>KH005</td>
+            <td>Nguyễn Thanh Thủy</td>
+            <td>thuy2707@example.com</td>
+            <td>0377476732</td>
+            <td>210 Nguyễn Tất Thành, Đà Nẵng</td>
             <td><span class="status success">Hoạt động</span></td>
             <td>
               <button class="btn-edit">Sửa</button>
@@ -95,11 +83,11 @@ function renderCustomersPage() {
             </td>
           </tr>
           <tr>
-            <td>KH003</td>
-            <td>Lê Văn C</td>
-            <td>vanc@example.com</td>
-            <td>0987654321</td>
-            <td>89 Hai Bà Trưng, Hà Nội</td>
+            <td>KH006</td>
+            <td>Nguyễn Quốc Phú</td>
+            <td>Phu2845@example.com</td>
+            <td>074495838</td>
+            <td>27 Mỹ An, Đà Nẵng</td>
             <td><span class="status success">Hoạt động</span></td>
             <td>
               <button class="btn-edit">Sửa</button>
@@ -107,11 +95,11 @@ function renderCustomersPage() {
             </td>
           </tr>
           <tr>
-            <td>KH003</td>
-            <td>Lê Văn C</td>
-            <td>vanc@example.com</td>
-            <td>0987654321</td>
-            <td>89 Hai Bà Trưng, Hà Nội</td>
+            <td>KH007</td>
+            <td>Phan Quốc Thắng</td>
+            <td>qthang777@example.com</td>
+            <td>0837492837</td>
+            <td>09 Dũng Sĩ Thanh Khê, Đà Nẵng</td>
             <td><span class="status success">Hoạt động</span></td>
             <td>
               <button class="btn-edit">Sửa</button>
@@ -119,11 +107,38 @@ function renderCustomersPage() {
             </td>
           </tr>
           <tr>
-            <td>KH003</td>
-            <td>Lê Văn C</td>
-            <td>vanc@example.com</td>
-            <td>0987654321</td>
-            <td>89 Hai Bà Trưng, Hà Nội</td>
+            <td>KH008</td>
+            <td>Lê Nguyễn Bích Giao</td>
+            <td>giao828@example.com</td>
+            <td>0984374857</td>
+            <td>104 Nguyễn Văn Linh, Đà Nẵng</td>
+            <td><span class="status success">Hoạt động</span></td>
+            <td>
+              <button class="btn-edit">Sửa</button>
+              <button class="btn-delete">Xóa</button>
+            </td>
+          </tr>
+          <tr>
+            <td>KH009</td>
+            <td>Trần Thiện Hương</td>
+            <td>huongtran2338@example.com</td>
+            <td>0383749521</td>
+            <td>54 Dương Bích Liên, Đà Nẵng</td>
+            <td><span class="status success">Hoạt động</span></td>
+            <td>
+              <button class="btn-edit">Sửa</button>
+              <button class="btn-delete">Xóa</button>
+            </td>
+          </tr>
+          <tr>
+            <td>...</td>
+          </tr>
+          <tr>
+            <td>KH836</td>
+            <td>Lê Tấn Huy</td>
+            <td>huycris777@example.com</td>
+            <td>0384475839</td>
+            <td>748/12 Trần Cao Vân, Đà Nẵng</td>
             <td><span class="status success">Hoạt động</span></td>
             <td>
               <button class="btn-edit">Sửa</button>

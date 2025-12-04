@@ -6,7 +6,7 @@ function renderDashboardPage() {
     <h1> Hi Admin</h1>
 
     <div class="stats-cards">
-      <div class="card"><h3>Doanh thu</h3><p>25.000.000₫</p></div>
+      <div class="card"><h3>Doanh thu hôm nay</h3><p>3.640.000</p></div>
       <div class="card"><h3>Đơn hàng</h3><p>152</p></div>
       <div class="card"><h3>Khách hàng</h3><p>89</p></div>
       <div class="card"><h3>Sản phẩm</h3><p>46</p></div>

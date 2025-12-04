@@ -11,11 +11,11 @@ function renderReportsPage() {
         </div>
         <div class="report-card">
           <h3>Đơn hàng trong tháng</h3>
-          <p>380 đơn</p>
+          <p>5892 đơn</p>
         </div>
         <div class="report-card">
           <h3>Khách hàng mới</h3>
-          <p>56 người</p>
+          <p>184 người</p>
         </div>
       </div>
 
