@@ -7,11 +7,11 @@ function renderReportsPage() {
       <div class="report-summary">
         <div class="report-card">
           <h3>Tổng doanh thu</h3>
-          <p>125,000,000đ</p>
+          <p>194,040,000đ</p>
         </div>
         <div class="report-card">
           <h3>Đơn hàng trong tháng</h3>
-          <p>5892 đơn</p>
+          <p>7470 đơn</p>
         </div>
         <div class="report-card">
           <h3>Khách hàng mới</h3>

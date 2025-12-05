@@ -6,8 +6,8 @@ function renderDashboardPage() {
     <h1> Hi Admin</h1>
 
     <div class="stats-cards">
-      <div class="card"><h3>Doanh thu hôm nay</h3><p>3.640.000</p></div>
-      <div class="card"><h3>Đơn hàng</h3><p>152</p></div>
+      <div class="card"><h3>Doanh thu hôm nay</h3><p>7.452.000</p></div>
+      <div class="card"><h3>Đơn hàng</h3><p>278</p></div>
       <div class="card"><h3>Khách hàng</h3><p>89</p></div>
       <div class="card"><h3>Sản phẩm</h3><p>46</p></div>
     </div>
@@ -21,15 +21,12 @@ function renderDashboardPage() {
       <table>
         <thead><tr><th>Sản phẩm</th><th>Đã bán</th><th>Doanh thu</th></tr></thead>
         <tbody>
-          <tr><td>Bánh mì đặc ruột</td><td>120</td><td>3.600.000₫</td></tr>
-          <tr><td>Bánh sữa tươi</td><td>85</td><td>2.550.000₫</td></tr>
-          <tr><td>Bánh socola</td><td>60</td><td>1.800.000₫</td></tr>
-          <tr><td>Bánh mì đặc ruột</td><td>120</td><td>3.600.000₫</td></tr>
-          <tr><td>Bánh sữa tươi</td><td>85</td><td>2.550.000₫</td></tr>
-          <tr><td>Bánh socola</td><td>60</td><td>1.800.000₫</td></tr>
-          <tr><td>Bánh mì đặc ruột</td><td>120</td><td>3.600.000₫</td></tr>
-          <tr><td>Bánh sữa tươi</td><td>85</td><td>2.550.000₫</td></tr>
-          <tr><td>Bánh socola</td><td>60</td><td>1.800.000₫</td></tr>
+          <tr><td>Bánh mì xúc xích</td><td>120</td><td>1.800.000₫</td></tr>
+          <tr><td>Bánh chả</td><td>86</td><td>1.032.000₫</td></tr>
+          <tr><td>Pizza hải sản</td><td>14</td><td>2.100.000₫</td></tr>
+          <tr><td>Pizza bò</td><td>11</td><td>1.320.000₫</td></tr>
+          <tr><td>Hamburger thịt nướng</td><td>34</td><td>680.000₫</td></tr>
+          <tr><td>Hamburger phô mai</td><td>13</td><td>520.000₫</td></tr>
         </tbody>
       </table>
     </div>
