@@ -6,16 +6,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.banhmiviet.R;
 import com.example.banhmiviet.data.DataRepository;
+import com.example.banhmiviet.model.Order;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.*;
-import com.github.mikephil.charting.data.*;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import java.text.NumberFormat;
@@ -29,6 +37,8 @@ public class HomeFragment extends Fragment {
     private LineChart lineChart;
     private CardView cardRevenue, cardOrders, cardCustomers, cardProducts;
 
+    private DataRepository repo;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -36,26 +46,27 @@ public class HomeFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        tvRevenue = view.findViewById(R.id.tvRevenue);
-        tvOrders = view.findViewById(R.id.tvOrders);
+        tvRevenue   = view.findViewById(R.id.tvRevenue);
+        tvOrders    = view.findViewById(R.id.tvOrders);
         tvCustomers = view.findViewById(R.id.tvCustomers);
-        tvProducts = view.findViewById(R.id.tvProducts);
-        lineChart = view.findViewById(R.id.lineChart);
+        tvProducts  = view.findViewById(R.id.tvProducts);
+        lineChart   = view.findViewById(R.id.lineChart);
 
-        cardRevenue = view.findViewById(R.id.cardRevenue);
-        cardOrders = view.findViewById(R.id.cardOrders);
+        cardRevenue   = view.findViewById(R.id.cardRevenue);
+        cardOrders    = view.findViewById(R.id.cardOrders);
         cardCustomers = view.findViewById(R.id.cardCustomers);
-        cardProducts = view.findViewById(R.id.cardProducts);
+        cardProducts  = view.findViewById(R.id.cardProducts);
 
-        // load và hiển thị dữ liệu
+        repo = DataRepository.getInstance();
+
+        // load & hiển thị dữ liệu
         refreshDashboard();
 
-        // click handlers -> gọi Activity để chuyển fragment
+        // ====== CLICK CARD: điều hướng ======
         cardOrders.setOnClickListener(v -> {
             if (getActivity() instanceof com.example.banhmiviet.MainActivity) {
                 ((com.example.banhmiviet.MainActivity) getActivity()).openOrders();
             } else {
-                // fallback: replace fragment trực tiếp
                 getParentFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragment_container, new OrderFragment())
@@ -80,7 +91,7 @@ public class HomeFragment extends Fragment {
             if (getActivity() instanceof com.example.banhmiviet.MainActivity) {
                 ((com.example.banhmiviet.MainActivity) getActivity()).openCustomers();
             } else {
-                // if you have CustomerFragment replace here
+                // TODO: mở CustomerFragment nếu có
             }
         });
 
@@ -100,26 +111,31 @@ public class HomeFragment extends Fragment {
     }
 
     private void refreshDashboard() {
-        DataRepository repo = DataRepository.getInstance();
 
-        double revenue = repo.getTotalRevenue();
-        int orders = repo.getOrdersCount();
-        int customers = repo.getCustomersCount();
-        int products = repo.getProductsCount();
+        // ====== SỐ LIỆU TỔNG ======
+        double revenue   = repo.getTotalRevenue();
+        int orders       = repo.getTotalOrderCount();
+        int customers    = repo.getTotalCustomerCount();
+        int products     = repo.getTotalProductCount();
 
         tvRevenue.setText(formatVND(revenue));
         tvOrders.setText(String.valueOf(orders));
         tvCustomers.setText(String.valueOf(customers));
         tvProducts.setText(String.valueOf(products));
 
-        // build entries for chart using orders totals (demo)
+        // ====== DỮ LIỆU BIỂU ĐỒ ======
         List<Entry> entries = new ArrayList<>();
-        List<DataRepository.Order> orderList = repo.getOrders();
+
+        // Ở đây mình dùng danh sách Order để vẽ demo:
+        List<Order> orderList = repo.getOrders();
         for (int i = 0; i < orderList.size(); i++) {
-            entries.add(new Entry(i, (float) orderList.get(i).getTotalAmount()));
+            entries.add(new Entry(i, (float) orderList.get(i).getTotalPrice()));
         }
-        // ensure at least 6 points (for display) — fill zeros if needed
-        while (entries.size() < 6) entries.add(new Entry(entries.size(), 0f));
+
+        // bảo đảm có ít nhất 6 điểm cho đẹp
+        while (entries.size() < 6) {
+            entries.add(new Entry(entries.size(), 0f));
+        }
 
         setupLineChart(entries);
     }
@@ -145,6 +161,7 @@ public class HomeFragment extends Fragment {
         LineData data = new LineData(set);
         lineChart.setData(data);
 
+        // trục X: D1, D2, ...
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setGranularity(1f);
@@ -153,10 +170,11 @@ public class HomeFragment extends Fragment {
             @Override
             public String getAxisLabel(float value, AxisBase axis) {
                 int idx = Math.round(value) + 1;
-                return "D" + idx; // D1, D2... or T1..T6 as you want
+                return "D" + idx;
             }
         });
 
+        // trục Y: format tiền VNĐ
         YAxis left = lineChart.getAxisLeft();
         final NumberFormat vnFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
         left.setValueFormatter(new ValueFormatter() {

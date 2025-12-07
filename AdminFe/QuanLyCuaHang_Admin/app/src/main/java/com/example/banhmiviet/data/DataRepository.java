@@ -1,81 +1,203 @@
 package com.example.banhmiviet.data;
 
+import com.example.banhmiviet.R;
+import com.example.banhmiviet.model.Customer;
+import com.example.banhmiviet.model.Employee;
+import com.example.banhmiviet.model.InventoryItem;
+import com.example.banhmiviet.model.Order;
+import com.example.banhmiviet.model.Product;
+import com.example.banhmiviet.model.RevenuePoint;
+
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Demo repository: thay bằng API / Room / SQLite thực tế sau này.
- */
 public class DataRepository {
 
     private static DataRepository instance;
 
-    // Demo lists
-    private final List<Order> orders = new ArrayList<>();
     private final List<Product> products = new ArrayList<>();
+    private final List<Order> orders = new ArrayList<>();
     private final List<Customer> customers = new ArrayList<>();
+    private final List<Employee> employees = new ArrayList<>();
+    private final List<InventoryItem> inventoryItems = new ArrayList<>();
+    private final List<RevenuePoint> revenuePoints = new ArrayList<>();
 
     private DataRepository() {
-        // populate demo data
-        products.add(new Product("mặt hàng 1", 15000));
-        products.add(new Product("mặt hàng 2", 12000));
-        products.add(new Product("mặt hàng 3", 10000));
-
-        customers.add(new Customer("Người A"));
-        customers.add(new Customer("Người B"));
-
-        // demo orders
-        Order o1 = new Order("Đơn #001");
-        o1.addItem(products.get(0), 1);
-        o1.addItem(products.get(1), 1);
-        orders.add(o1);
-
-        Order o2 = new Order("Đơn #002");
-        o2.addItem(products.get(0), 2);
-        o2.addItem(products.get(2), 1);
-        orders.add(o2);
+        mockProducts();
+        mockOrders();
+        mockCustomers();
+        mockEmployees();
+        mockInventory();
+        mockRevenue();
     }
 
-    public static synchronized DataRepository getInstance() {
-        if (instance == null) instance = new DataRepository();
+    public static DataRepository getInstance() {
+        if (instance == null) {
+            instance = new DataRepository();
+        }
         return instance;
     }
 
-    // summary getters
-    public double getTotalRevenue() {
-        double sum = 0;
-        for (Order o : orders) sum += o.getTotalAmount();
-        return sum;
+    // ========= MOCK DATA =========
+    private void mockProducts() {
+        products.add(new Product("P01", "Bánh mì thịt", 15000,
+                "Bánh mì thịt truyền thống", "Bánh mì", R.drawable.ic_launcher_foreground));
+        products.add(new Product("P02", "Hamburger bò", 35000,
+                "Hamburger bò phô mai", "Hamburger", R.drawable.ic_launcher_foreground));
+        products.add(new Product("P03", "Pizza phô mai", 69000,
+                "Pizza phô mai 4 loại", "Pizza", R.drawable.ic_launcher_foreground));
     }
 
-    public int getOrdersCount() { return orders.size(); }
-    public int getCustomersCount() { return customers.size(); }
-    public int getProductsCount() { return products.size(); }
-
-    // getters for lists (for detail screens)
-    public List<Order> getOrders() { return orders; }
-    public List<Product> getProducts() { return products; }
-    public List<Customer> getCustomers() { return customers; }
-
-    // --- Simple inner demo classes (move to separate files if muốn)
-    public static class Product {
-        public final String name;
-        public final double price;
-        public Product(String name, double price) { this.name = name; this.price = price; }
+    private void mockOrders() {
+        orders.add(new Order("O01", "1x Bánh mì thịt, 1x Trà sữa", 27000));
+        orders.add(new Order("O02", "2x Hamburger bò", 70000));
     }
-    public static class Customer {
-        public final String name;
-        public Customer(String name) { this.name = name; }
+
+    private void mockCustomers() {
+        customers.add(new Customer("C01", "Hoàng", "0909 999 999", 5, 350000));
+        customers.add(new Customer("C02", "Lan", "0904 444 444", 2, 120000));
     }
-    public static class Order {
-        public final String id;
-        private final List<Item> items = new ArrayList<>();
-        public Order(String id) { this.id = id; }
-        public void addItem(Product p, int qty) { items.add(new Item(p, qty)); }
-        public double getTotalAmount() {
-            double s=0; for (Item it: items) s += it.product.price * it.qty; return s;
+
+    private void mockEmployees() {
+        employees.clear();
+
+        Employee e1 = new Employee("E01", "Nguyễn Văn A", "Quản lý",
+                "0901 111 111", "a@sapo.com", 28, "Nam",
+                "manager01", "123456");
+        Employee e2 = new Employee("E02", "Trần Thị B", "Thu ngân",
+                "0902 222 222", "b@sapo.com", 23, "Nữ",
+                "cashier01", "123456");
+        Employee e3 = new Employee("E03", "Hoàng Văn C", "Bán hàng",
+                "0934 333 333", "c@sapo.com", 25, "Nam",
+                "seller01", "123456");
+
+        employees.add(e1);
+        employees.add(e2);
+        employees.add(e3);
+    }
+
+    private void mockInventory() {
+        inventoryItems.add(new InventoryItem("P01", "Bánh mì thịt", 100));
+        inventoryItems.add(new InventoryItem("P02", "Hamburger bò", 30));
+        inventoryItems.add(new InventoryItem("P03", "Pizza phô mai", 10));
+    }
+
+    private void mockRevenue() {
+        // dữ liệu demo cho biểu đồ doanh thu
+        revenuePoints.add(new RevenuePoint("D1", 28000));
+        revenuePoints.add(new RevenuePoint("D2", 41000));
+        revenuePoints.add(new RevenuePoint("D3", 0));
+        revenuePoints.add(new RevenuePoint("D4", 0));
+        revenuePoints.add(new RevenuePoint("D5", 0));
+        revenuePoints.add(new RevenuePoint("D6", 0));
+    }
+
+    // ========= GETTER =========
+    public List<Product> getProducts()            { return new ArrayList<>(products); }
+    public List<Order> getOrders()                { return new ArrayList<>(orders); }
+    public List<Customer> getCustomers()          { return new ArrayList<>(customers); }
+    public List<Employee> getEmployees()          { return new ArrayList<>(employees); }
+    public List<InventoryItem> getInventoryItems(){ return new ArrayList<>(inventoryItems); }
+    public List<RevenuePoint> getRevenuePoints()  { return new ArrayList<>(revenuePoints); }
+
+    // ========= ACTION =========
+    public void addOrder(Order order) {
+        orders.add(order);
+
+        // Cập nhật thêm 1 điểm doanh thu cho biểu đồ
+        String label = "D" + (revenuePoints.size() + 1);
+        revenuePoints.add(new RevenuePoint(label, order.getTotalPrice()));
+    }
+
+    public void removeOrder(int index) {
+        if (index >= 0 && index < orders.size()) {
+            orders.remove(index);
         }
-        public List<Item> getItems(){ return items; }
-        public static class Item { public final Product product; public final int qty; Item(Product p,int q){product=p;qty=q;} }
+    }
+    public void updateEmployee(int index, Employee e) {
+        if (index >= 0 && index < employees.size()) {
+            employees.set(index, e);
+        }
+    }
+
+    public void removeEmployee(int index) {
+        if (index >= 0 && index < employees.size()) {
+            employees.remove(index);
+        }
+    }
+
+    public void addProduct(Product p) {
+        products.add(p);
+    }
+
+    public void updateProduct(int index, Product p) {
+        if (index >= 0 && index < products.size()) {
+            products.set(index, p);
+        }
+    }
+
+    public void addCustomer(Customer c)  { customers.add(c); }
+    public void addEmployee(Employee e)  { employees.add(e); }
+
+    // ========= SUMMARY / THỐNG KÊ =========
+    public double getTotalRevenue() {
+        double total = 0;
+        for (Order o : orders) {
+            total += o.getTotalPrice();
+        }
+        return total;
+    }
+
+    public int getTotalOrderCount()      { return orders.size(); }
+    public int getTotalProductCount()    { return products.size(); }
+    public int getTotalCustomerCount()   { return customers.size(); }
+    public int getTotalEmployeeCount()   { return employees.size(); }
+
+    // Alias cho code cũ nếu có dùng
+    public int getOrdersCount()    { return getTotalOrderCount(); }
+    public int getProductsCount()  { return getTotalProductCount(); }
+    public int getCustomersCount() { return getTotalCustomerCount(); }
+
+    // ========= THỐNG KÊ DOANH THU THEO NGÀY (CHO BIỂU ĐỒ) =========
+    public List<Double> getRevenueByDay() {
+        List<Double> result = new ArrayList<>();
+
+        if (!revenuePoints.isEmpty()) {
+            for (RevenuePoint p : revenuePoints) {
+                result.add(p.getValue());
+            }
+        } else {
+            // fallback: nếu chưa có revenuePoints thì lấy từ đơn hàng
+            for (Order o : orders) {
+                result.add(o.getTotalPrice());
+            }
+        }
+
+        // đảm bảo ít nhất 7 điểm cho chart nhìn đẹp
+        while (result.size() < 7) {
+            result.add(0.0);
+        }
+
+        return result;
+    }
+
+    public List<String> getRevenueLabels() {
+        List<String> labels = new ArrayList<>();
+
+        if (!revenuePoints.isEmpty()) {
+            for (RevenuePoint p : revenuePoints) {
+                labels.add(p.getLabel());
+            }
+        } else {
+            for (int i = 0; i < orders.size(); i++) {
+                labels.add("D" + (i + 1));
+            }
+        }
+
+        while (labels.size() < 7) {
+            labels.add("D" + (labels.size() + 1));
+        }
+
+        return labels;
     }
 }

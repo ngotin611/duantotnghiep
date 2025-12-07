@@ -18,7 +18,10 @@ import com.example.banhmiviet.model.Order;
 import com.example.banhmiviet.ui.adapters.OrderAdapter;
 import com.example.banhmiviet.ui.dialogs.SelectProductDialogFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.example.banhmiviet.data.DataRepository;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderFragment extends Fragment implements SelectProductDialogFragment.OnOrderConfirmedListener {
@@ -27,19 +30,20 @@ public class OrderFragment extends Fragment implements SelectProductDialogFragme
     private FloatingActionButton fabAddOrder;
     private OrderAdapter adapter;
     private List<Order> orderList;
-    private OrderController controller;
+    private DataRepository repo;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_order, container, false);
 
         recyclerView = view.findViewById(R.id.recyclerViewOrders);
         fabAddOrder = view.findViewById(R.id.fabAddOrder);
 
-        controller = new OrderController();
-        orderList = controller.getOrders();
+        repo = DataRepository.getInstance();
+        orderList = repo.getOrders();
 
         adapter = new OrderAdapter(orderList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -55,6 +59,7 @@ public class OrderFragment extends Fragment implements SelectProductDialogFragme
 
     @Override
     public void onOrderConfirmed(Order order) {
+        repo.addOrder(order);
         orderList.add(order);
         adapter.notifyItemInserted(orderList.size() - 1);
         Toast.makeText(getContext(), "Đã tạo đơn hàng " + order.getId(), Toast.LENGTH_SHORT).show();

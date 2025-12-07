@@ -1,11 +1,12 @@
 package com.example.banhmiviet.ui.adapters;
 
+import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,73 +14,71 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.banhmiviet.R;
 import com.example.banhmiviet.model.Product;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
-    private List<Product> productList;
+    public interface OnDeleteClickListener {
+        void onDelete(int position);
+    }
 
-    public ProductAdapter(List<Product> productList) {
+    public interface OnItemClickListener {
+        void onItemClick(int position, Product product);
+    }
+
+    private final Context context;
+    private final List<Product> productList;
+    private final OnDeleteClickListener deleteListener;
+    private final OnItemClickListener itemClickListener;
+
+    private final NumberFormat vnFormat =
+            NumberFormat.getInstance(new Locale("vi", "VN"));
+
+    public ProductAdapter(Context context,
+                          List<Product> productList,
+                          OnDeleteClickListener deleteListener,
+                          OnItemClickListener itemClickListener) {
+        this.context = context;
         this.productList = productList;
-    }
-
-    public void addProduct(Product product) {
-        productList.add(product);
-        notifyItemInserted(productList.size() - 1);
-    }
-
-    public void updateProduct(int position, Product product) {
-        if (position >= 0 && position < productList.size()) {
-            productList.set(position, product);
-            notifyItemChanged(position);
-        }
-    }
-
-    public static class ProductViewHolder extends RecyclerView.ViewHolder {
-        TextView txtProductName, txtProductPrice, txtProductDesc;
-        ImageButton btnDelete;
-
-        public ProductViewHolder(@NonNull View itemView) {
-            super(itemView);
-            txtProductName = itemView.findViewById(R.id.txtProductName);
-            txtProductPrice = itemView.findViewById(R.id.txtProductPrice);
-            txtProductDesc = itemView.findViewById(R.id.txtProductDesc);
-            btnDelete = itemView.findViewById(R.id.btnDelete);
-        }
+        this.deleteListener = deleteListener;
+        this.itemClickListener = itemClickListener;
     }
 
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+        View v = LayoutInflater.from(context)
                 .inflate(R.layout.item_product, parent, false);
-        return new ProductViewHolder(view);
+        return new ProductViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
-        Product product = productList.get(position);
-        holder.txtProductName.setText(product.getName());
-        holder.txtProductPrice.setText(product.getPrice() + " đ");
-        holder.txtProductDesc.setText(product.getDescription());
+        Product p = productList.get(position);
 
-        // Sửa khi click
-        holder.itemView.setOnClickListener(v -> {
-            Toast.makeText(v.getContext(), "Sửa: " + product.getName(), Toast.LENGTH_SHORT).show();
-            // Gọi callback cho Fragment
-            if (onItemClickListener != null) {
-                onItemClickListener.onEditClick(position, product);
-            }
+        holder.txtName.setText(p.getName());
+        holder.txtCategory.setText("Loại: " + (p.getCategory() == null ? "" : p.getCategory()));
+        holder.txtPrice.setText(vnFormat.format((long) p.getPrice()) + " đ");
+        holder.txtDesc.setText(p.getDescription());
+
+        // Ảnh: ưu tiên imageUri, không có thì dùng imageResId, cuối cùng là default
+        if (p.getImageUri() != null && !p.getImageUri().isEmpty()) {
+            holder.imgProduct.setImageURI(Uri.parse(p.getImageUri()));
+        } else if (p.getImageResId() != 0) {
+            holder.imgProduct.setImageResource(p.getImageResId());
+        } else {
+            holder.imgProduct.setImageResource(R.drawable.ic_launcher_foreground);
+        }
+
+        holder.imgDelete.setOnClickListener(v -> {
+            if (deleteListener != null) deleteListener.onDelete(holder.getAdapterPosition());
         });
 
-        // Xoá
-        holder.btnDelete.setOnClickListener(v -> {
-            int adapterPosition = holder.getAdapterPosition();
-            productList.remove(adapterPosition);
-            notifyItemRemoved(adapterPosition);
-            notifyItemRangeChanged(adapterPosition, productList.size());
-
-            Toast.makeText(v.getContext(), "Đã xoá: " + product.getName(), Toast.LENGTH_SHORT).show();
+        holder.itemView.setOnClickListener(v -> {
+            if (itemClickListener != null)
+                itemClickListener.onItemClick(holder.getAdapterPosition(), p);
         });
     }
 
@@ -88,15 +87,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         return productList.size();
     }
 
-    // --- Interface để callback ra Fragment ---
-    public interface OnItemClickListener {
-        void onEditClick(int position, Product product);
-    }
+    public static class ProductViewHolder extends RecyclerView.ViewHolder {
+        ImageView imgProduct, imgDelete;
+        TextView txtName, txtCategory, txtPrice, txtDesc;
 
-    private OnItemClickListener onItemClickListener;
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.onItemClickListener = listener;
+        public ProductViewHolder(@NonNull View itemView) {
+            super(itemView);
+            imgProduct = itemView.findViewById(R.id.imgProduct);
+            imgDelete  = itemView.findViewById(R.id.imgDeleteProduct);
+            txtName    = itemView.findViewById(R.id.txtProductName);
+            txtCategory= itemView.findViewById(R.id.txtProductCategory);
+            txtPrice   = itemView.findViewById(R.id.txtProductPrice);
+            txtDesc    = itemView.findViewById(R.id.txtProductDesc);
+        }
     }
 }
-

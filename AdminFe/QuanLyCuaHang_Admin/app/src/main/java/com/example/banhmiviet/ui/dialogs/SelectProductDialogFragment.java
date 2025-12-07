@@ -1,6 +1,5 @@
 package com.example.banhmiviet.ui.dialogs;
 
-
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -14,14 +13,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
 
 import com.example.banhmiviet.R;
-import com.example.banhmiviet.controller.OrderController;
-import com.example.banhmiviet.controller.ProductController;
+import com.example.banhmiviet.data.DataRepository;
 import com.example.banhmiviet.model.Order;
 import com.example.banhmiviet.model.Product;
 
@@ -37,13 +35,14 @@ public class SelectProductDialogFragment extends DialogFragment {
     private TextView txtTotalPrice;
     private Button btnConfirm;
 
-    private ProductController productController;
-    private OrderController orderController;
+    private DataRepository repo;
     private ProductAdapter adapter;
     private List<Product> fullProductList;
-    private HashMap<Product, Integer> selectedProducts = new HashMap<>();
+    private final HashMap<Product, Integer> selectedProducts = new HashMap<>();
+
     private OnOrderConfirmedListener listener;
 
+    // Giao tiếp ngược về Fragment cha (OrderFragment)
     public interface OnOrderConfirmedListener {
         void onOrderConfirmed(Order order);
     }
@@ -51,10 +50,10 @@ public class SelectProductDialogFragment extends DialogFragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+
+        // Listener lấy từ parent fragment (OrderFragment)
         if (getParentFragment() instanceof OnOrderConfirmedListener) {
             listener = (OnOrderConfirmedListener) getParentFragment();
-        } else {
-            throw new RuntimeException("Parent fragment must implement OnOrderConfirmedListener");
         }
     }
 
@@ -70,14 +69,15 @@ public class SelectProductDialogFragment extends DialogFragment {
         txtTotalPrice = view.findViewById(R.id.txtTotalPrice);
         btnConfirm = view.findViewById(R.id.btnConfirmOrder);
 
-        productController = new ProductController();
-        orderController = new OrderController();
-        fullProductList = productController.getProducts();
+        // Dùng kho dữ liệu chung
+        repo = DataRepository.getInstance();
+        fullProductList = repo.getProducts();
 
         adapter = new ProductAdapter(fullProductList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
+        // Tìm kiếm theo tên sản phẩm
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override public boolean onQueryTextSubmit(String query) { return false; }
 
@@ -88,16 +88,18 @@ public class SelectProductDialogFragment extends DialogFragment {
             }
         });
 
+        // Nút xác nhận tạo đơn hàng
         btnConfirm.setOnClickListener(v -> {
             if (selectedProducts.isEmpty()) {
                 dismiss();
                 return;
             }
 
-            // Sinh mã đơn hàng mới (tự động tăng)
-            String newOrderId = String.format("%03d", orderController.getOrders().size() + 1);
+            // Sinh mã đơn hàng mới (tự động tăng, dùng list trong DataRepository)
+            String newOrderId = String.format(Locale.getDefault(),
+                    "%03d", repo.getOrders().size() + 1);
 
-            // Tạo chuỗi mô tả sản phẩm + tổng giá
+            // Tạo chuỗi mô tả + tính tổng tiền
             StringBuilder description = new StringBuilder();
             double totalPrice = 0;
 
@@ -105,17 +107,19 @@ public class SelectProductDialogFragment extends DialogFragment {
                 int quantity = selectedProducts.get(product);
                 double itemTotal = product.getPrice() * quantity;
                 totalPrice += itemTotal;
+
                 description.append(String.format(Locale.getDefault(),
                         "%dx %s, ", quantity, product.getName()));
             }
 
             if (description.length() > 2) {
-                description.setLength(description.length() - 2); // Xoá dấu phẩy cuối
+                description.setLength(description.length() - 2); // xoá ", " cuối
             }
 
-            // 👉 Nếu class Order chỉ nhận 2 tham số (id, description), thì truyền đúng:
-            Order newOrder = new Order(newOrderId, description.toString());
+            // Dùng constructor 3 tham số: id + mô tả + tổng tiền
+            Order newOrder = new Order(newOrderId, description.toString(), totalPrice);
 
+            // Gửi về OrderFragment
             if (listener != null) {
                 listener.onOrderConfirmed(newOrder);
             }
@@ -126,6 +130,7 @@ public class SelectProductDialogFragment extends DialogFragment {
         return view;
     }
 
+    // Lọc danh sách sản phẩm theo tên
     private void filterProductList(String query) {
         List<Product> filtered = new ArrayList<>();
         for (Product p : fullProductList) {
@@ -136,6 +141,7 @@ public class SelectProductDialogFragment extends DialogFragment {
         adapter.updateList(filtered);
     }
 
+    // Tính lại tổng tiền mỗi khi số lượng thay đổi
     private void updateTotalPriceDisplay() {
         double total = 0;
         for (Product product : selectedProducts.keySet()) {
@@ -145,6 +151,7 @@ public class SelectProductDialogFragment extends DialogFragment {
         txtTotalPrice.setText("Tổng: " + total + " đ");
     }
 
+    // Adapter hiển thị danh sách sản phẩm trong dialog
     private class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
         private List<Product> displayList;
@@ -169,22 +176,37 @@ public class SelectProductDialogFragment extends DialogFragment {
         @Override
         public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
             Product product = displayList.get(position);
+
             holder.txtName.setText(product.getName());
-            holder.txtPrice.setText(product.getPrice() + " đ");
+            holder.txtPrice.setText(String.format(Locale.getDefault(),
+                    "%,.0f đ", product.getPrice()));
 
-            Integer quantity = selectedProducts.getOrDefault(product, 0);
-            holder.edtQuantity.setText(String.valueOf(quantity > 0 ? quantity : ""));
+            // Nếu sản phẩm đã chọn trước đó -> hiển thị lại số lượng
+            Integer currentQty = selectedProducts.get(product);
+            if (currentQty == null) currentQty = 0;
+            if (currentQty == 0) {
+                holder.edtQuantity.setText("");
+            } else {
+                holder.edtQuantity.setText(String.valueOf(currentQty));
+            }
 
+            // Lắng nghe thay đổi số lượng
             holder.edtQuantity.addTextChangedListener(new TextWatcher() {
-                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) { }
 
                 @Override
                 public void afterTextChanged(Editable s) {
                     int qty = 0;
                     try {
-                        qty = Integer.parseInt(s.toString());
-                    } catch (NumberFormatException ignored) {}
+                        String text = s.toString().trim();
+                        if (!text.isEmpty()) qty = Integer.parseInt(text);
+                    } catch (NumberFormatException e) {
+                        qty = 0;
+                    }
 
                     if (qty > 0) {
                         selectedProducts.put(product, qty);

@@ -17,23 +17,10 @@ import java.util.List;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
 
-    private List<Order> orderList;
+    private final List<Order> orderList;
 
     public OrderAdapter(List<Order> orderList) {
         this.orderList = orderList;
-    }
-
-    public static class OrderViewHolder extends RecyclerView.ViewHolder {
-        TextView txtOrderId, txtOrderDetails, txtOrderTotal;
-        ImageButton btnDeleteOrder;
-
-        public OrderViewHolder(@NonNull View itemView) {
-            super(itemView);
-            txtOrderId = itemView.findViewById(R.id.txtOrderId);
-            txtOrderDetails = itemView.findViewById(R.id.txtOrderDetails);
-            txtOrderTotal = itemView.findViewById(R.id.txtOrderTotal);
-            btnDeleteOrder = itemView.findViewById(R.id.btnDeleteOrder);
-        }
     }
 
     @NonNull
@@ -47,26 +34,46 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     @Override
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         Order order = orderList.get(position);
-        holder.txtOrderId.setText("Đơn #" + order.getId());
-        holder.txtOrderDetails.setText(order.getDescription());
 
+        holder.txtOrderId.setText("#" + order.getId());
+        holder.txtOrderDetails.setText(order.getDescription());
         holder.txtOrderTotal.setText("Tổng: " + order.getTotalPrice() + " đ");
 
-        holder.btnDeleteOrder.setOnClickListener(v -> {
-            orderList.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, orderList.size());
-            Toast.makeText(v.getContext(), "Đã xoá đơn hàng #" + order.getId(), Toast.LENGTH_SHORT).show();
+        // Xoá đơn hàng
+        holder.btnDelete.setOnClickListener(v -> {
+            int pos = holder.getAdapterPosition();
+            if (pos != RecyclerView.NO_POSITION) {
+                orderList.remove(pos);
+                notifyItemRemoved(pos);
+                Toast.makeText(v.getContext(),
+                        "Đã xoá đơn hàng #" + order.getId(),
+                        Toast.LENGTH_SHORT).show();
+            }
         });
 
+        // Click item -> xem chi tiết
         holder.itemView.setOnClickListener(v -> {
-            Toast.makeText(v.getContext(), "Chi tiết: " + order.getDescription(), Toast.LENGTH_LONG).show();
-
+            Toast.makeText(v.getContext(),
+                    "Chi tiết: " + order.getDescription(),
+                    Toast.LENGTH_LONG).show();
         });
     }
 
     @Override
     public int getItemCount() {
         return orderList.size();
+    }
+
+    static class OrderViewHolder extends RecyclerView.ViewHolder {
+        TextView txtOrderId, txtOrderDetails, txtOrderTotal;
+        ImageButton btnDelete;
+
+        public OrderViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtOrderId = itemView.findViewById(R.id.txtOrderId);
+            txtOrderDetails = itemView.findViewById(R.id.txtOrderDetails);
+            txtOrderTotal = itemView.findViewById(R.id.txtOrderTotal);
+            btnDelete = itemView.findViewById(R.id.btnDeleteOrder);
+        }
     }
 }

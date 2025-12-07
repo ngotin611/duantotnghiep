@@ -4,54 +4,62 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="16dp">
 
         <EditText
             android:id="@+id/edtName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Tên nhân viên" />
+            android:hint="Họ tên"
+            android:inputType="textPersonName" />
 
         <EditText
             android:id="@+id/edtEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Email"
-            android:inputType="textEmailAddress" />
+            android:inputType="textEmailAddress"
+            android:layout_marginTop="8dp" />
 
         <EditText
             android:id="@+id/edtPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Số điện thoại"
-            android:inputType="phone" />
+            android:inputType="phone"
+            android:layout_marginTop="8dp" />
 
         <EditText
             android:id="@+id/edtAge"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Tuổi"
-            android:inputType="number" />
+            android:inputType="number"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Giới tính"
+            android:layout_marginTop="12dp" />
 
         <RadioGroup
             android:id="@+id/radioGender"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            android:orientation="horizontal">
 
             <RadioButton
-                android:id="@+id/radioMale"
+                android:id="@+id/rbMale"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nam"
-                android:checked="true" />
+                android:text="Nam" />
 
             <RadioButton
-                android:id="@+id/radioFemale"
+                android:id="@+id/rbFemale"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Nữ"
@@ -62,13 +70,34 @@
             android:id="@+id/edtUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Tài khoản" />
+            android:hint="Tài khoản đăng nhập"
+            android:inputType="textPersonName"
+            android:layout_marginTop="12dp" />
 
-        <EditText
-            android:id="@+id/edtPassword"
+        <!-- Hàng mật khẩu + nút mắt -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Mật khẩu"
-            android:inputType="textPassword" />
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/edtPassword"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Mật khẩu"
+                android:inputType="textPassword"
+                android:paddingEnd="8dp" />
+
+            <ImageView
+                android:id="@+id/imgTogglePassword"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="6dp"
+                android:src="@android:drawable/ic_menu_view" />
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>
