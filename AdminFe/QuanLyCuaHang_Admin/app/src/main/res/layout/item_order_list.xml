@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    card_view:cardCornerRadius="12dp"
+    card_view:cardElevation="5dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="14dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Mã đơn + Loại đơn -->
+        <TextView
+            android:id="@+id/txtOrderTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="#001 - Tại bàn"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"/>
+
+        <!-- Người tạo -->
+        <TextView
+            android:id="@+id/txtOrderCreator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tạo bởi: Thu ngân A"
+            android:textSize="13sp"
+            android:textColor="#4A4A4A"
+            android:layout_marginTop="2dp"/>
+
+        <!-- Số món -->
+        <TextView
+            android:id="@+id/txtOrderAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 món"
+            android:textSize="13sp"
+            android:textColor="#4A4A4A"
+            android:layout_marginTop="4dp"/>
+
+        <!-- Mô tả đơn -->
+        <TextView
+            android:id="@+id/txtOrderDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2x Bánh mì, 1x Coca"
+            android:textSize="13sp"
+            android:textColor="#616161"
+            android:layout_marginTop="4dp"/>
+
+        <!-- Tổng tiền -->
+        <TextView
+            android:id="@+id/txtOrderMoney"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="115,000 đ"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_red_dark"
+            android:layout_marginTop="10dp"/>
+
+        <!-- Thời gian -->
+        <TextView
+            android:id="@+id/txtOrderTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đã tạo: 15 phút trước"
+            android:textColor="#888"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp"/>
+
+        <!-- Trạng thái -->
+        <TextView
+            android:id="@+id/txtOrderStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chưa thanh toán"
+            android:textStyle="bold"
+            android:textSize="13sp"
+            android:textColor="#FF8C00"
+            android:layout_marginTop="4dp"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

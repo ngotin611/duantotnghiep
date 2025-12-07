@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:text="15.000 đ"
                 android:textSize="14sp"
-                android:textColor="#4CAF50" />
+                android:textColor="@color/chudao" />
 
             <TextView
                 android:id="@+id/txtProductDesc"

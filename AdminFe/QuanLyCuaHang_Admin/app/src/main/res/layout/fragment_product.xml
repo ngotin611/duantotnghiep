@@ -17,6 +17,10 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:contentDescription="Thêm sản phẩm"
-        android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/teal_200" />
+
+        app:backgroundTint="@android:color/white"
+        app:tint="@android:color/black"
+
+        android:src="@drawable/ic_add" />
+
 </FrameLayout>

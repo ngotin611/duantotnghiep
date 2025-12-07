@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="0dp">
+
+    <!-- Vùng nội dung scroll -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/layoutContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvOrderId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="#001 - Tại bàn 1"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/tvOrderTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tạo lúc: 10:30 - 20 phút trước"
+                android:textSize="13sp"
+                android:textColor="#666666"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:id="@+id/tvOrderType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loại: Tại bàn 1"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/tvOrderCreator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Người tạo: Thu ngân A"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:id="@+id/tvOrderStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trạng thái: Chưa thanh toán"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/tvOrderTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tổng tiền: 150.000 đ"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/holo_red_dark"
+                android:layout_marginTop="10dp" />
+
+            <!-- Tiêu đề chi tiết món -->
+            <TextView
+                android:id="@+id/tvOrderItemsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chi tiết món"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_marginTop="12dp"
+                android:textColor="@android:color/black" />
+
+            <!-- Container để add từng dòng món ăn (tên trái, số lượng phải) -->
+            <LinearLayout
+                android:id="@+id/layoutOrderItems"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="4dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Thanh nút cố định dưới cùng dialog -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:padding="12dp">
+
+        <Button
+            android:id="@+id/btnPrintInvoice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="In hóa đơn"
+            android:backgroundTint="#007AFF"/>
+
+        <Button
+            android:id="@+id/btnPayOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tất toán"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="#007AFF"/>
+
+        <Button
+            android:id="@+id/btnCancelOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hủy đơn"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="#007AFF"/>
+    </LinearLayout>
+
+</LinearLayout>

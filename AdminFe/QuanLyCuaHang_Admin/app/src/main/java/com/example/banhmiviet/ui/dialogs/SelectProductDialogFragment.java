@@ -23,6 +23,7 @@ import com.example.banhmiviet.data.DataRepository;
 import com.example.banhmiviet.model.Order;
 import com.example.banhmiviet.model.Product;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,10 +65,10 @@ public class SelectProductDialogFragment extends DialogFragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_select_products, container, false);
 
-        searchView = view.findViewById(R.id.searchView);
-        recyclerView = view.findViewById(R.id.recyclerViewSelectProducts);
-        txtTotalPrice = view.findViewById(R.id.txtTotalPrice);
-        btnConfirm = view.findViewById(R.id.btnConfirmOrder);
+        searchView     = view.findViewById(R.id.searchView);
+        recyclerView   = view.findViewById(R.id.recyclerViewSelectProducts);
+        txtTotalPrice  = view.findViewById(R.id.txtTotalPrice);
+        btnConfirm     = view.findViewById(R.id.btnConfirmOrder);
 
         // Dùng kho dữ liệu chung
         repo = DataRepository.getInstance();
@@ -76,6 +77,9 @@ public class SelectProductDialogFragment extends DialogFragment {
         adapter = new ProductAdapter(fullProductList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
+
+        // Tổng tiền ban đầu
+        updateTotalPriceDisplay();
 
         // Tìm kiếm theo tên sản phẩm
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -95,11 +99,13 @@ public class SelectProductDialogFragment extends DialogFragment {
                 return;
             }
 
-            // Sinh mã đơn hàng mới (tự động tăng, dùng list trong DataRepository)
-            String newOrderId = String.format(Locale.getDefault(),
-                    "%03d", repo.getOrders().size() + 1);
+            // Sinh mã đơn hàng mới dạng: O001, O002...
+            String newOrderId = "O" + String.format(
+                    Locale.getDefault(),
+                    "%03d",
+                    repo.getOrders().size() + 1
+            );
 
-            // Tạo chuỗi mô tả + tính tổng tiền
             StringBuilder description = new StringBuilder();
             double totalPrice = 0;
 
@@ -116,10 +122,22 @@ public class SelectProductDialogFragment extends DialogFragment {
                 description.setLength(description.length() - 2); // xoá ", " cuối
             }
 
-            // Dùng constructor 3 tham số: id + mô tả + tổng tiền
-            Order newOrder = new Order(newOrderId, description.toString(), totalPrice);
+            // TẠM THỜI: coi là đơn tại bàn 1, createdBy = "Admin"
+            // (sau này bạn truyền số bàn + người order thật vào)
+            Order newOrder = new Order(
+                    newOrderId,
+                    description.toString(),
+                    totalPrice,
+                    Order.TYPE_AT_TABLE,
+                    1,                    // tableNumber
+                    Order.STATUS_NEW,
+                    System.currentTimeMillis(),
+                    "Admin"
+            );
 
-            // Gửi về OrderFragment
+            // Lưu & trừ kho (hàm này bạn phải có trong DataRepository)
+            repo.addOrderWithDetails(newOrder, selectedProducts);
+
             if (listener != null) {
                 listener.onOrderConfirmed(newOrder);
             }
@@ -148,7 +166,8 @@ public class SelectProductDialogFragment extends DialogFragment {
             int quantity = selectedProducts.get(product);
             total += product.getPrice() * quantity;
         }
-        txtTotalPrice.setText("Tổng: " + total + " đ");
+        NumberFormat nf = NumberFormat.getInstance(new Locale("vi", "VN"));
+        txtTotalPrice.setText("Tổng: " + nf.format((long) total) + " đ");
     }
 
     // Adapter hiển thị danh sách sản phẩm trong dialog
