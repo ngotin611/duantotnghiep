@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 public class ProductResponseDTO {
     private Long id;
     private String name;
-    private String slug;
+    private int quantity;
     private BigDecimal price;
     private String imgProduct;
     private String description;

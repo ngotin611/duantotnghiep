@@ -11,7 +11,9 @@ import java.util.List;
 
 
 public interface CategoryService {
-    List<CategoryResponseDTO> findAll();
+//    List<CategoryResponseDTO> findAll(); // khong cần find all vì đa co findContainng
+    // khi name = "" => like ="%%" = find All
+
     PageResponse<CategoryResponseDTO> findByNameContaining( String name, Pageable pageable);
 
 

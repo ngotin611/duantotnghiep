@@ -3,9 +3,11 @@ package com.example.foodbe.annotation_handler;
 ;
 import com.example.foodbe.annotation.PasswordMatches;
 import com.example.foodbe.request.user.UserCreateDTO;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+//import javax.validation.ConstraintValidator;
+//import javax.validation.ConstraintValidatorContext;
 
 
 public class PasswordMatchesValidator implements ConstraintValidator<PasswordMatches, Object> {

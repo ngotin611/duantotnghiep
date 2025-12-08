@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class CategoryResponseDTO {
     private Long id;
     private String name;
-    private String slug;
+//    private String slug;
     private String imgCategory;
     private LocalDateTime createAt;
 }

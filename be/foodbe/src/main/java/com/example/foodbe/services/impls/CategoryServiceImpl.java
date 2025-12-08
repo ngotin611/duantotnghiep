@@ -1,6 +1,8 @@
 package com.example.foodbe.services.impls;
 
+import com.example.foodbe.models.AppUser;
 import com.example.foodbe.payload.PageResponse;
+import com.example.foodbe.repositories.UserRepository;
 import com.example.foodbe.request.category.UpdateCategoryDTO;
 import com.example.foodbe.response.category.CategoryResponseDTO;
 import com.example.foodbe.request.category.CreateCategoryDTO;
@@ -28,16 +30,17 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final PageMapperUtils2 pageMapperUtils2;
+    private final UserRepository userRepository;
 
-    @Override
-    public List<CategoryResponseDTO> findAll() {
-        List<Category> categories = categoryRepository.findAll();
-
-        return categories.stream()
-                .map(category->categoryMapper.toDTO(category))
-                .collect(Collectors.toList());
-
-    }
+//    @Override
+//    public List<CategoryResponseDTO> findAll() {
+//        List<Category> categories = categoryRepository.findAll();
+//
+//        return categories.stream()
+//                .map(category->categoryMapper.toDTO(category))
+//                .collect(Collectors.toList());
+//
+//    }
 
 
     @Override
@@ -56,7 +59,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponseDTO create(CreateCategoryDTO createCategoryDTO) {
-        Category category= categoryMapper.toEntity(createCategoryDTO);
+        AppUser user = userRepository.findById(createCategoryDTO.getUserId())
+                .orElseThrow(()-> new NotFoundException(ConstantUtils.ExceptionMessage.NOT_FOUND+createCategoryDTO.getUserId()));
+        Category category= categoryMapper.toEntity(createCategoryDTO,user );
         return categoryMapper.toDTO( categoryRepository.save(category)) ;
 
     }
@@ -66,18 +71,13 @@ public class CategoryServiceImpl implements CategoryService {
         // 1. Tìm entity cũ trong DB
         Category existingCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ConstantUtils.ExceptionMessage.NOT_FOUND + id));
-
-        // cập nhật
         categoryMapper.updateEntityFromDto(updateCategoryDTO,existingCategory);
-
-        //lưu lại db
         Category category= categoryRepository.save(existingCategory);
         return categoryMapper.toDTO(category);
     }
 
     @Override
     public void deleteById(Long id) {
-        // Kiểm tra xem category có tồn tại không
        if (!categoryRepository.existsById(id)){
                throw new NotFoundException(ConstantUtils.ExceptionMessage.NOT_FOUND + id);}
         // Xóa category nếu tồn tại

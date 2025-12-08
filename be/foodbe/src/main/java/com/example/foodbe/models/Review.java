@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Review {
     @Id
@@ -21,8 +22,8 @@ public class Review {
     @Column(length = 500)
     private String comment;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "appUser_id", nullable = false)
-    private AppUser appUser;
+    @JoinColumn(name = "user_id", nullable = false)
+    private AppUser user;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id",nullable = false)
     private Product product;

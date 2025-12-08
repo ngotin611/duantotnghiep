@@ -50,6 +50,7 @@ public final class ConstantUtils {
 
         public static final String DUPLICATE = "Resource already exists.";
         public static final String NOT_FOUND = "Resource not found: ";
+        public static final String EXISTS = "Resource is exists: ";
         public static final String INVALID_DATA = "Invalid data provided.";
         public static final String SYSTEM_ERROR = "System error occurred.";
         public static final String HTTP_RESPONSE = "HTTP response error.";

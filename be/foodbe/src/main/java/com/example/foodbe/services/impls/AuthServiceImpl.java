@@ -45,9 +45,10 @@ public class AuthServiceImpl implements AuthService {
                 )
         );
 
+
         // 2. Lấy user từ authentication principal
         // Vì bạn return org.springframework.security.core.userdetails.User
-        User userDetails = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User userDetails = (User) authentication.getPrincipal();
         String email = userDetails.getUsername();
         AppUser appUser= userService.findByEmail(email);
 
@@ -81,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
         // 1. Validate refresh token
         Token token = tokenService.validateToken(refreshTokenRaw);
 
-        AppUser appUser = token.getAppUser();
+        AppUser appUser = token.getUser();
 
         // 2. Lấy roles của user
         List<String> roles = List.of("ROLE_" + appUser.getRole().name());

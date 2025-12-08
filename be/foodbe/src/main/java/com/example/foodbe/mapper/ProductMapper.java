@@ -19,7 +19,7 @@ public class ProductMapper {
         return ProductResponseDTO.builder()
                 .id(product.getId())
                 .name(product.getName())
-                .slug(product.getSlug())
+                .quantity(product.getQuality())
                 .price(product.getPrice())
                 .imgProduct(product.getImgProduct())
                 .description(product.getDescription())
@@ -31,7 +31,7 @@ public class ProductMapper {
 
         return Product.builder()
                 .name(createProductDTO.getName())
-                .slug(createProductDTO.getSlug())
+                .quality(createProductDTO.getQuantity())
                 .price(createProductDTO.getPrice())
                 .imgProduct(createProductDTO.getImgProduct())
                 .description(createProductDTO.getDescription())
@@ -42,7 +42,7 @@ public class ProductMapper {
     public void UpdateEntityFromDto(UpdateProductDTO updateProductDTO, Product product){
         if(updateProductDTO == null || product==null ) return;
         product.setName(updateProductDTO.getName());
-        product.setSlug(updateProductDTO.getSlug());
+        product.setQuality(updateProductDTO.getQuantity());
         product.setImgProduct(updateProductDTO.getImgProduct());
         product.setPrice(updateProductDTO.getPrice());
         product.setDescription(updateProductDTO.getDescription());

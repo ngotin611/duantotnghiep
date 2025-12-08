@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.validation.constraints.NotNull;
+//import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 
@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Table(name= "Category")
 public class Category {
@@ -24,11 +25,12 @@ public class Category {
     @Column(nullable = false,unique = true)
     private String name;
 
-    @Column(nullable = false,unique = true)
-    private String slug;
-
     @Column(nullable = false)
     private String imgCategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private AppUser user;
 
     @CreationTimestamp
     @Column(updatable = false)

@@ -1,8 +1,9 @@
 package com.example.foodbe.request.review;
 
+import jakarta.validation.constraints.*;
 import lombok.*;
 
-import javax.validation.constraints.*;
+//import javax.validation.constraints.*;
 
 @Getter
 @Setter
@@ -12,7 +13,7 @@ public class CreateReviewDto {
 
     @Min(value = 1, message = "{entity.size.min}")
     @Max(value = 5, message = "{entity.size.max}")
-    private int rating;           // Điểm đánh giá 1-5
+    private Integer rating;           // Điểm đánh giá 1-5
 
     @NotBlank(message = "{entity.name.required}")
     @Size(max = 500, message = "{entity.size.max}")

@@ -15,7 +15,7 @@ public class ReviewMapper {
         return Review.builder()
                 .rating(createReviewDto.getRating())
                 .comment(createReviewDto.getComment())
-                .appUser(appUser)
+                .user(appUser)
                 .product(product)
                 .build();
     }
@@ -25,12 +25,12 @@ public class ReviewMapper {
                 .id(review.getId())
                 .rating(review.getRating())
                 .comment(review.getComment())
-                .userId(review.getAppUser().getId())
+                .userId(review.getUser().getId())
                 .productId(review.getProduct().getId())
-                .userName(review.getAppUser().getName())      // chỉ lấy tên
+                .userName(review.getUser().getName())      // chỉ lấy tên
                 .productName(review.getProduct().getName())   // chỉ lấy tên sản phẩm
-                .created_at(review.getCreated_at())
-                .updated_at(review.getUpdate_at())
+                .created_at(review.getCreatedAt())
+                .updated_at(review.getUpdateAt())
                 .build();
     }
 

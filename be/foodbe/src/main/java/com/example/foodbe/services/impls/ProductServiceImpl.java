@@ -1,5 +1,6 @@
 package com.example.foodbe.services.impls;
 
+import com.example.foodbe.payload.PageResponse;
 import com.example.foodbe.request.product.CreateProductDTO;
 import com.example.foodbe.response.product.ProductResponseDTO;
 import com.example.foodbe.request.product.UpdateProductDTO;
@@ -9,12 +10,17 @@ import com.example.foodbe.models.Category;
 import com.example.foodbe.models.Product;
 import com.example.foodbe.repositories.CategoryRepository;
 import com.example.foodbe.repositories.ProductRepository;
+import com.example.foodbe.response.user.UserResponseDTO;
 import com.example.foodbe.services.ProductService;
 import com.example.foodbe.utils.ConstantUtils;
+import com.example.foodbe.utils.PageMapperUtils2;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -25,17 +31,26 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
+    private final PageMapperUtils2 pageMapperUtils2;
+
+//    @Override
+//    public List<ProductResponseDTO> findAll() {
+//         List<Product> products = productRepository.findAll();
+//
+//        if (products.isEmpty()) {
+//            return List.of();
+//        }
+//        return  products.stream()
+//                .map(product->productMapper.toDto(product))
+//                .collect(Collectors.toList());
+//    }
+
 
     @Override
-    public List<ProductResponseDTO> findAll() {
-         List<Product> products = productRepository.findAll();
-
-        if (products.isEmpty()) {
-            return List.of();
-        }
-        return  products.stream()
-                .map(product->productMapper.toDto(product))
-                .collect(Collectors.toList());
+    public PageResponse<ProductResponseDTO> findByNameContaining(String name, Pageable pageable) {
+        Page<Product> page = productRepository.findByNameContaining(name, pageable);
+        Function<Product, ProductResponseDTO> mapper = productMapper::toDto;
+        return pageMapperUtils2.toPageResponseDto(page, mapper);
     }
 
     @Override

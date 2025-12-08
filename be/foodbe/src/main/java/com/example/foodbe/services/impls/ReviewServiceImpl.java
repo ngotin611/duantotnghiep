@@ -1,5 +1,6 @@
 package com.example.foodbe.services.impls;
 
+import com.example.foodbe.payload.PageResponse;
 import com.example.foodbe.request.review.CreateReviewDto;
 import com.example.foodbe.response.review.ReviewResponseDto;
 import com.example.foodbe.request.review.UpdateReviewDto;
@@ -13,12 +14,16 @@ import com.example.foodbe.repositories.ReviewRepository;
 import com.example.foodbe.repositories.UserRepository;
 import com.example.foodbe.services.ReviewService;
 import com.example.foodbe.utils.ConstantUtils;
+import com.example.foodbe.utils.PageMapperUtils2;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -30,17 +35,14 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewMapper reviewMapper;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final PageMapperUtils2 pageMapperUtils2;
 
 
     @Override
-    public List<ReviewResponseDto> findAll() {
-        List<Review> reviews = reviewRepository.findAll();
-        if(reviews.isEmpty()){
-            return List.of();
-        }
-        return reviews.stream()
-                .map(review->reviewMapper.toDto(review))
-                .collect(Collectors.toList());
+    public PageResponse<ReviewResponseDto> findAll(Pageable pageable) {
+        Page<Review> page = reviewRepository.findAll(pageable);
+        Function<Review, ReviewResponseDto> mapper = reviewMapper::toDto;
+        return pageMapperUtils2.toPageResponseDto(page, mapper);
     }
 
     @Override

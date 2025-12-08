@@ -49,8 +49,9 @@ public class TokenServiceImpl implements TokenService {
         Token token = Token.builder()
                 .token(tokenHash)
                 .revoked(false)
-                .appUser(user)
-                .expires_at(LocalDateTime.now().plusHours(TOKEN_EXPIRE_HOURS))
+                .user(user)
+                .createdAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusHours(TOKEN_EXPIRE_HOURS))
                 .build();
 
         tokenRepository.save(token);
@@ -66,7 +67,7 @@ public class TokenServiceImpl implements TokenService {
                 .orElseThrow(()-> new NotFoundException(ConstantUtils.ExceptionMessage.NOT_FOUND));
 
         if (token.isRevoked()) throw new InvalidDataException(ConstantUtils.ExceptionMessage.TOKEN_IS_REVOKED);
-        if (token.getExpires_at().isBefore(LocalDateTime.now())) {
+        if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
             throw new InvalidDataException(ConstantUtils.ExceptionMessage.TOKEN_IS_EXPIRED);
         }
 
