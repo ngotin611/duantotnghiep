@@ -37,11 +37,11 @@ import java.util.Map;
 
 public class NewOrderFragment extends Fragment implements
         NewOrderProductAdapter.OnProductClickListener,
-        CartItemAdapter.OnCartChangeListener {
+            CartItemAdapter.OnCartChangeListener {
 
-    public static final String ARG_ORDER_TYPE   = "order_type";     // Order.TYPE_AT_TABLE / TYPE_TAKE_AWAY
-    public static final String ARG_TABLE_NUMBER = "table_number";   // Integer (bàn) hoặc -1 nếu không có
-    public static final String ARG_TAKE_AWAY_CODE = "take_away_code"; // String, có thể null
+    public static final String ARG_ORDER_TYPE      = "order_type";       // Order.TYPE_AT_TABLE / TYPE_TAKE_AWAY
+    public static final String ARG_TABLE_NUMBER    = "table_number";     // Integer (bàn) hoặc -1 nếu không có
+    public static final String ARG_TAKE_AWAY_CODE  = "take_away_code";   // String, có thể null
 
     private TextView tvTitle, tvCartInfo, tvTotalMoney;
     private EditText edtSearch;
@@ -49,19 +49,21 @@ public class NewOrderFragment extends Fragment implements
     private RecyclerView rvProducts;
 
     private DataRepository repo;
-    private List<Product> fullProducts = new ArrayList<>();
+    private final List<Product> fullProducts = new ArrayList<>();
     private NewOrderProductAdapter productAdapter;
 
-    // giỏ hàng: product -> quantity
+    // giỏ hàng: Product -> quantity
     private final HashMap<Product, Integer> cart = new HashMap<>();
 
-    private String orderType;
+    private String  orderType;
     private Integer tableNumber;
-    private String takeAwayCode;
+    private String  takeAwayCode;
 
     private final NumberFormat vnFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
 
-    public static NewOrderFragment newInstance(String orderType, @Nullable Integer tableNumber, @Nullable String takeAwayCode) {
+    public static NewOrderFragment newInstance(String orderType,
+                                               @Nullable Integer tableNumber,
+                                               @Nullable String takeAwayCode) {
         NewOrderFragment f = new NewOrderFragment();
         Bundle b = new Bundle();
         b.putString(ARG_ORDER_TYPE, orderType);
@@ -71,34 +73,42 @@ public class NewOrderFragment extends Fragment implements
         return f;
     }
 
+    // ================== LIFECYCLE ==================
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_new_order, container, false);
 
-        tvTitle      = view.findViewById(R.id.tvNewOrderTitle);
+        // Ánh xạ view
+        tvTitle      = view.findViewById(R.id.tvTitle);          // đảm bảo trong XML có id này
         tvCartInfo   = view.findViewById(R.id.tvCartInfo);
-        tvTotalMoney = view.findViewById(R.id.tvCartTotal);
+        tvTotalMoney = view.findViewById(R.id.tvTotalMoney);     // đảm bảo trong XML có id này
         edtSearch    = view.findViewById(R.id.edtSearchProduct);
         btnBack      = view.findViewById(R.id.btnBack);
         btnOpenCart  = view.findViewById(R.id.btnOpenCart);
         rvProducts   = view.findViewById(R.id.rvProducts);
 
+        // Lấy repo + dữ liệu sản phẩm
         repo = DataRepository.getInstance();
-        fullProducts = repo.getProducts();
+        fullProducts.clear();
+        fullProducts.addAll(repo.getProducts());
 
-        // Lấy tham số (Tại bàn / Mang đi + số bàn / mã)
-        if (getArguments() != null) {
-            orderType = getArguments().getString(ARG_ORDER_TYPE, Order.TYPE_AT_TABLE);
-            if (getArguments().containsKey(ARG_TABLE_NUMBER)) {
-                tableNumber = getArguments().getInt(ARG_TABLE_NUMBER, -1);
+        // Lấy tham số truyền vào
+        Bundle args = getArguments();
+        if (args != null) {
+            orderType    = args.getString(ARG_ORDER_TYPE, Order.TYPE_TAKE_AWAY);
+            if (args.containsKey(ARG_TABLE_NUMBER)) {
+                tableNumber = args.getInt(ARG_TABLE_NUMBER);
             }
-            takeAwayCode = getArguments().getString(ARG_TAKE_AWAY_CODE, null);
+            takeAwayCode = args.getString(ARG_TAKE_AWAY_CODE);
         } else {
-            orderType = Order.TYPE_AT_TABLE;
-            tableNumber = -1;
+            orderType = Order.TYPE_TAKE_AWAY;
+            tableNumber = null;
+            takeAwayCode = null;
         }
 
         setupTitle();
@@ -110,7 +120,11 @@ public class NewOrderFragment extends Fragment implements
         return view;
     }
 
+    // ================== TITLE ==================
+
     private void setupTitle() {
+        if (tvTitle == null) return;
+
         String title;
         if (Order.TYPE_AT_TABLE.equals(orderType)) {
             if (tableNumber == null || tableNumber <= 0) {
@@ -129,17 +143,26 @@ public class NewOrderFragment extends Fragment implements
         tvTitle.setText(title);
     }
 
+    // ================== PRODUCT LIST ==================
+
+    // ================== PRODUCT LIST ==================
+
     private void setupProductList() {
-        productAdapter = new NewOrderProductAdapter(fullProducts, this, cart);
+        // Adapter nhận danh sách sản phẩm + listener click
+        productAdapter = new NewOrderProductAdapter(fullProducts, this);
 
         rvProducts.setLayoutManager(new GridLayoutManager(getContext(), 2));
         rvProducts.setAdapter(productAdapter);
     }
 
+
+    // ================== SEARCH / FILTER ==================
+
     private void setupSearch() {
         edtSearch.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
             @Override
             public void afterTextChanged(Editable s) {
                 String q = s.toString().trim();
@@ -148,23 +171,9 @@ public class NewOrderFragment extends Fragment implements
         });
     }
 
-    private void setupButtons() {
-        btnBack.setOnClickListener(v -> {
-            // quay lại màn đơn hàng
-            getParentFragmentManager().popBackStack();
-        });
-
-        btnOpenCart.setOnClickListener(v -> {
-            if (cart.isEmpty()) {
-                Toast.makeText(getContext(), "Chưa chọn món nào", Toast.LENGTH_SHORT).show();
-            } else {
-                openCartDialog();
-            }
-        });
-    }
-
-    // ========= SEARCH/FILTER =========
     private void filterProducts(String query) {
+        if (productAdapter == null) return;
+
         if (query.isEmpty()) {
             productAdapter.updateList(fullProducts);
             return;
@@ -210,7 +219,23 @@ public class NewOrderFragment extends Fragment implements
         return temp;
     }
 
-    // ========= PRODUCT CLICK =========
+    // ================== BUTTONS ==================
+
+    private void setupButtons() {
+        btnBack.setOnClickListener(v ->
+                getParentFragmentManager().popBackStack()
+        );
+
+        btnOpenCart.setOnClickListener(v -> {
+            if (cart.isEmpty()) {
+                Toast.makeText(getContext(), "Chưa chọn món nào", Toast.LENGTH_SHORT).show();
+            } else {
+                openCartDialog();
+            }
+        });
+    }
+
+    // ================== PRODUCT CLICK (FROM ADAPTER) ==================
 
     @Override
     public void onProductClick(Product product) {
@@ -223,19 +248,19 @@ public class NewOrderFragment extends Fragment implements
         View view = LayoutInflater.from(getContext())
                 .inflate(R.layout.dialog_choose_quantity, null, false);
 
-        TextView tvName = view.findViewById(R.id.tvProductName);
-        TextView tvPrice = view.findViewById(R.id.tvProductPrice);
-        TextView tvQty = view.findViewById(R.id.tvQuantity);
+        TextView tvName   = view.findViewById(R.id.tvProductName);
+        TextView tvPrice  = view.findViewById(R.id.tvProductPrice);
+        TextView tvQty    = view.findViewById(R.id.tvQuantity);
         ImageButton btnMinus = view.findViewById(R.id.btnMinus);
-        ImageButton btnPlus = view.findViewById(R.id.btnPlus);
-        View btnConfirm = view.findViewById(R.id.btnConfirmQty);
+        ImageButton btnPlus  = view.findViewById(R.id.btnPlus);
+        View btnConfirm      = view.findViewById(R.id.btnConfirmQty);
 
         tvName.setText(product.getName());
         tvPrice.setText(vnFormat.format((long) product.getPrice()) + " đ");
 
         int current = cart.containsKey(product) ? cart.get(product) : 1;
         if (current <= 0) current = 1;
-        int[] qty = new int[]{current};
+        final int[] qty = new int[]{current};
         tvQty.setText(String.valueOf(qty[0]));
 
         btnMinus.setOnClickListener(v -> {
@@ -252,7 +277,9 @@ public class NewOrderFragment extends Fragment implements
 
         btnConfirm.setOnClickListener(v -> {
             cart.put(product, qty[0]);
-            productAdapter.notifyDataSetChanged();
+            if (productAdapter != null) {
+                productAdapter.notifyDataSetChanged();
+            }
             updateCartSummary();
             dialog.dismiss();
         });
@@ -261,7 +288,7 @@ public class NewOrderFragment extends Fragment implements
         dialog.show();
     }
 
-    // ========= CART SUMMARY =========
+    // ================== CART SUMMARY (TRÊN MÀN HÌNH CHÍNH) ==================
 
     private void updateCartSummary() {
         int totalItems = 0;
@@ -273,28 +300,32 @@ public class NewOrderFragment extends Fragment implements
             totalMoney += q * e.getKey().getPrice();
         }
 
-        tvCartInfo.setText("Giỏ hàng: " + totalItems + " món");
-        tvTotalMoney.setText(vnFormat.format((long) totalMoney) + " đ");
+        if (tvCartInfo != null) {
+            tvCartInfo.setText("Giỏ hàng: " + totalItems + " món");
+        }
+        if (tvTotalMoney != null) {
+            tvTotalMoney.setText(vnFormat.format((long) totalMoney) + " đ");
+        }
     }
 
-    // ========= CART DIALOG =========
+    // ================== CART DIALOG ==================
 
     private void openCartDialog() {
         BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
         View view = LayoutInflater.from(getContext())
                 .inflate(R.layout.dialog_cart, null, false);
 
-        RecyclerView rvCart = view.findViewById(R.id.rvCart);
-        TextView tvCartTotal = view.findViewById(R.id.tvCartTotalDialog);
-        View btnConfirm = view.findViewById(R.id.btnConfirmOrder);
-        View btnClose   = view.findViewById(R.id.btnCloseCart);
+        RecyclerView rvCart    = view.findViewById(R.id.rvCart);
+        TextView tvCartTotal   = view.findViewById(R.id.tvCartTotalDialog);
+        View btnConfirm        = view.findViewById(R.id.btnConfirmOrder);
+        View btnClose          = view.findViewById(R.id.btnCloseCart);
 
         List<Map.Entry<Product, Integer>> cartEntries = new ArrayList<>(cart.entrySet());
         CartItemAdapter cartAdapter = new CartItemAdapter(cartEntries, this);
         rvCart.setLayoutManager(new LinearLayoutManager(getContext()));
         rvCart.setAdapter(cartAdapter);
 
-        // hiển thị tổng
+        // hiển thị tổng lần đầu
         double totalMoney = 0;
         for (Map.Entry<Product, Integer> e : cart.entrySet()) {
             totalMoney += e.getKey().getPrice() * e.getValue();
@@ -316,7 +347,7 @@ public class NewOrderFragment extends Fragment implements
         dialog.show();
     }
 
-    // callback khi +/- trong giỏ hàng thay đổi
+    // callback khi +/- trong giỏ hàng thay đổi (từ CartItemAdapter)
     @Override
     public void onCartChanged(List<Map.Entry<Product, Integer>> newEntries) {
         cart.clear();
@@ -325,11 +356,13 @@ public class NewOrderFragment extends Fragment implements
                 cart.put(e.getKey(), e.getValue());
             }
         }
-        productAdapter.notifyDataSetChanged();
+        if (productAdapter != null) {
+            productAdapter.notifyDataSetChanged();
+        }
         updateCartSummary();
     }
 
-    // ========= TẠO ĐƠN =========
+    // ================== TẠO ĐƠN ==================
 
     private void createOrderAndFinish() {
         // build description + total

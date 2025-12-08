@@ -1,7 +1,6 @@
 package com.example.banhmiviet.ui.fragments;
 
-import static java.security.AccessController.getContext;
-
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,11 +32,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class OrderFragment extends Fragment implements SelectProductDialogFragment.OnOrderConfirmedListener {
+public class OrderFragment extends Fragment
+        implements SelectProductDialogFragment.OnOrderConfirmedListener {
 
     // ===== MODE =====
-    private static final int MODE_ALL = 0;
-    private static final int MODE_AT_TABLE = 1;
+    private static final int MODE_ALL       = 0;
+    private static final int MODE_AT_TABLE  = 1;
     private static final int MODE_TAKE_AWAY = 2;
 
     private int currentMode = MODE_AT_TABLE;
@@ -98,7 +98,7 @@ public class OrderFragment extends Fragment implements SelectProductDialogFragme
 
             @Override
             public void onPrint(Order order) {
-                // Tạm thời chỉ toast, sau này nối máy in sau
+                // Tạm thời chỉ toast, sau này nối máy in
                 Toast.makeText(getContext(),
                         "In hóa đơn #" + order.getId(), Toast.LENGTH_SHORT).show();
             }
@@ -107,9 +107,10 @@ public class OrderFragment extends Fragment implements SelectProductDialogFragme
         // ---- Adapter hiển thị bàn (TẠI BÀN) ----
         tableAdapter = new TableAdapter((tableNumber, activeOrder) -> {
             if (activeOrder == null) {
-                Toast.makeText(getContext(),
-                        "Bàn " + tableNumber + " đang trống!", Toast.LENGTH_SHORT).show();
+                // Bàn trống -> tạo đơn mới cho bàn này
+                openNewOrderAtTable(tableNumber);
             } else {
+                // Bàn đang có đơn -> xem chi tiết
                 showOrderDetailDialog(activeOrder);
             }
         });
@@ -121,23 +122,18 @@ public class OrderFragment extends Fragment implements SelectProductDialogFragme
 
         // ===== Floating button (Tạo đơn) =====
         fabAddOrder.setOnClickListener(v -> {
-            // Tạm thời: nếu đang ở TẠI BÀN -> bàn 1, nếu MANG ĐI -> mã "TD01"
-            String type = (currentMode == MODE_TAKE_AWAY)
-                    ? Order.TYPE_TAKE_AWAY
-                    : Order.TYPE_AT_TABLE;
-
-            Integer tableNum = (currentMode == MODE_AT_TABLE) ? 1 : -1;
-            String takeAwayCode = (currentMode == MODE_TAKE_AWAY) ? "TD01" : null;
-
-            NewOrderFragment f = NewOrderFragment.newInstance(type, tableNum, takeAwayCode);
-
-            getParentFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, f)   // id container phù hợp với app của bạn
-                    .addToBackStack(null)
-                    .commit();
+            if (currentMode == MODE_AT_TABLE) {
+                // Tại bàn: bỏ dùng dấu cộng, yêu cầu click bàn
+                Toast.makeText(getContext(),
+                        "Chọn bàn để tạo đơn.", Toast.LENGTH_SHORT).show();
+            } else if (currentMode == MODE_ALL) {
+                // Hỏi tạo đơn tại bàn hay mang đi
+                showChooseOrderTypeDialog();
+            } else if (currentMode == MODE_TAKE_AWAY) {
+                // Mang đi -> mở luôn màn tạo đơn mang đi
+                openNewOrderTakeAway();
+            }
         });
-
 
         // ===== Mặc định mở TẠI BÀN =====
         setMode(MODE_AT_TABLE);
@@ -154,11 +150,13 @@ public class OrderFragment extends Fragment implements SelectProductDialogFragme
         highlightModeButton();
 
         if (mode == MODE_AT_TABLE) {
-            // --> Dạng lưới bàn 4 cột
+            // Dạng lưới bàn 4 cột, ẩn dấu cộng
+            fabAddOrder.setVisibility(View.GONE);
             recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 4));
             recyclerView.setAdapter(tableAdapter);
         } else {
-            // --> Dạng danh sách đơn
+            // Dạng danh sách đơn, hiện dấu cộng
+            fabAddOrder.setVisibility(View.VISIBLE);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
             List<Order> filtered = new ArrayList<>();
@@ -185,33 +183,87 @@ public class OrderFragment extends Fragment implements SelectProductDialogFragme
     // ============================================================
 
     private void highlightModeButton() {
-        // Bạn có thể tuỳ biến lại background & textColor theo ý
         btnAll.setSelected(currentMode == MODE_ALL);
         btnAtTable.setSelected(currentMode == MODE_AT_TABLE);
         btnTakeAway.setSelected(currentMode == MODE_TAKE_AWAY);
 
-        // Nếu bạn có bg_filter_*.xml thì set như sau:
         btnAll.setBackgroundResource(
-                currentMode == MODE_ALL ? R.drawable.bg_filter_left_selected : R.drawable.bg_filter_left);
+                currentMode == MODE_ALL
+                        ? R.drawable.bg_filter_left_selected
+                        : R.drawable.bg_filter_left);
+
         btnAtTable.setBackgroundResource(
-                currentMode == MODE_AT_TABLE ? R.drawable.bg_filter_middle_selected : R.drawable.bg_filter_middle);
+                currentMode == MODE_AT_TABLE
+                        ? R.drawable.bg_filter_middle_selected
+                        : R.drawable.bg_filter_middle);
+
         btnTakeAway.setBackgroundResource(
-                currentMode == MODE_TAKE_AWAY ? R.drawable.bg_filter_right_selected : R.drawable.bg_filter_right);
+                currentMode == MODE_TAKE_AWAY
+                        ? R.drawable.bg_filter_right_selected
+                        : R.drawable.bg_filter_right);
     }
 
     // ============================================================
-    //               SAU KHI TẠO ĐƠN TỪ DIALOG
+    //               SAU KHI TẠO ĐƠN TỪ (DIALOG CŨ – NẾU DÙNG)
     // ============================================================
 
     @Override
     public void onOrderConfirmed(Order order) {
-        repo.addOrder(order); // thêm vào kho chung
-
+        repo.addOrder(order);
         Toast.makeText(getContext(),
                 "Đã tạo đơn hàng #" + order.getId(), Toast.LENGTH_SHORT).show();
-
-        // Cập nhật lại UI theo mode hiện tại
         refreshCurrentMode();
+    }
+
+    // ============================================================
+    //         HỘP THOẠI CHỌN KIỂU ĐƠN KHI Ở TAB "TẤT CẢ"
+    // ============================================================
+
+    private void showChooseOrderTypeDialog() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Tạo đơn hàng")
+                .setItems(new CharSequence[]{"Tại bàn", "Mang đi"}, (dialog, which) -> {
+                    if (which == 0) {
+                        // Chuyển sang tab TẠI BÀN để chọn bàn
+                        setMode(MODE_AT_TABLE);
+                    } else {
+                        // Mở màn hình tạo đơn mang đi
+                        openNewOrderTakeAway();
+                    }
+                })
+                .show();
+    }
+
+    // ============================================================
+    //              MỞ MÀN HÌNH TẠO ĐƠN (NEWORDERFRAGMENT)
+    // ============================================================
+
+    private void openNewOrderAtTable(int tableNumber) {
+        NewOrderFragment f = NewOrderFragment.newInstance(
+                Order.TYPE_AT_TABLE,
+                tableNumber,
+                null          // không cần mã mang đi
+        );
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, f)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void openNewOrderTakeAway() {
+        NewOrderFragment f = NewOrderFragment.newInstance(
+                Order.TYPE_TAKE_AWAY,
+                -1,           // không có số bàn
+                "TD"          // bạn có thể tạo mã chi tiết trong fragment
+        );
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, f)
+                .addToBackStack(null)
+                .commit();
     }
 
     // ============================================================
@@ -234,11 +286,11 @@ public class OrderFragment extends Fragment implements SelectProductDialogFragme
         Button btnPay    = dialogView.findViewById(R.id.btnPayOrder);
         Button btnCancel = dialogView.findViewById(R.id.btnCancelOrder);
 
-        // ===== Fill dữ liệu =====
         // Loại đơn
         String typeText;
         if (Order.TYPE_AT_TABLE.equals(order.getType())) {
-            typeText = "Tại bàn " + (order.getTableNumber() == null ? "" : order.getTableNumber());
+            typeText = "Tại bàn " +
+                    (order.getTableNumber() == null ? "" : order.getTableNumber());
         } else {
             typeText = "Mang đi";
         }
@@ -277,8 +329,8 @@ public class OrderFragment extends Fragment implements SelectProductDialogFragme
 
                 int xIndex = itemStr.indexOf("x");
                 if (xIndex > 0) {
-                    quantityText = itemStr.substring(0, xIndex).trim(); // số lượng
-                    nameText = itemStr.substring(xIndex + 1).trim();     // tên món
+                    quantityText = itemStr.substring(0, xIndex).trim();
+                    nameText = itemStr.substring(xIndex + 1).trim();
                 }
 
                 LinearLayout row = new LinearLayout(getContext());
@@ -319,13 +371,14 @@ public class OrderFragment extends Fragment implements SelectProductDialogFragme
                         .setView(dialogView)
                         .create();
 
-        // ===== Sự kiện nút =====
+        // Nút in
         btnPrint.setOnClickListener(v -> {
             Toast.makeText(getContext(),
                     "In hóa đơn #" + order.getId(), Toast.LENGTH_SHORT).show();
             dialog.dismiss();
         });
 
+        // Nút tất toán
         btnPay.setOnClickListener(v -> {
             order.setStatus(Order.STATUS_PAID);
             refreshCurrentMode();
@@ -334,6 +387,7 @@ public class OrderFragment extends Fragment implements SelectProductDialogFragme
             dialog.dismiss();
         });
 
+        // Nút hủy đơn
         btnCancel.setOnClickListener(v -> {
             order.setStatus(Order.STATUS_CANCELLED);
             refreshCurrentMode();
@@ -371,5 +425,12 @@ public class OrderFragment extends Fragment implements SelectProductDialogFragme
         if (Order.STATUS_PAID.equals(status)) return "Đã thanh toán";
         if (Order.STATUS_CANCELLED.equals(status)) return "Đã hủy";
         return status;
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (repo != null) {
+            refreshCurrentMode();
+        }
     }
 }

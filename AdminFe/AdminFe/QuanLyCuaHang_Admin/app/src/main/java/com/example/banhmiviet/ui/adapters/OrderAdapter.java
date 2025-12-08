@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.banhmiviet.R;
 import com.example.banhmiviet.model.Order;
+import com.example.banhmiviet.model.Product;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -32,6 +33,9 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     public OrderAdapter(List<Order> orderList, OnOrderActionListener listener) {
         this.orderList = (orderList != null) ? orderList : new ArrayList<>();
         this.listener = listener;
+    }
+    public interface OnProductClickListener {
+        void onProductClick(Product product);
     }
 
     @NonNull
