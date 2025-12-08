@@ -26,7 +26,7 @@ function renderReportsPage() {
       <table class="table">
         <thead>
           <tr>
-            <th>Tháng</th>
+            <th>Tuần</th>
             <th>Doanh thu</th>
             <th>Đơn hàng</th>
             <th>Khách hàng mới</th>
@@ -34,27 +34,27 @@ function renderReportsPage() {
         </thead>
         <tbody>
           <tr>
-            <td>Tháng 1</td>
-            <td>18,000,000đ</td>
-            <td>120</td>
+            <td>Tuần 1</td>
+            <td>43,210,000đ</td>
+            <td>1532</td>
             <td>20</td>
           </tr>
           <tr>
-            <td>Tháng 2</td>
-            <td>22,500,000đ</td>
-            <td>135</td>
+            <td>Tuần 2</td>
+            <td>52,146,000đ</td>
+            <td>1954</td>
             <td>15</td>
           </tr>
           <tr>
-            <td>Tháng 3</td>
-            <td>28,000,000đ</td>
-            <td>150</td>
+            <td>Tuần 3</td>
+            <td>57,683,000đ</td>
+            <td>2248</td>
             <td>21</td>
           </tr>
           <tr>
-            <td>Tháng 4</td>
-            <td>30,500,000đ</td>
-            <td>160</td>
+            <td>Tuần 4</td>
+            <td>41,001,000đ</td>
+            <td>1736</td>
             <td>18</td>
           </tr>
         </tbody>

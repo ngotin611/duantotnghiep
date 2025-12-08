@@ -4,7 +4,7 @@ let orders = [
     customer: "Nguyễn Văn A",
     phone: "0987654321",
     date: "12/10/2025",
-    total: 350000,
+    total: 35000,
     status: "done"
   },
   {
@@ -12,7 +12,7 @@ let orders = [
     customer: "Trần Thị B",
     phone: "0912345678",
     date: "13/10/2025",
-    total: 180000,
+    total: 18000,
     status: "pending"
   }
 ];

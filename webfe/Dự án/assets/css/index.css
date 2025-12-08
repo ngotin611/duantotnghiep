@@ -500,7 +500,7 @@ body {
 .customers th {
   background: #ffe082;
   padding: 10px;
-  text-align: left;
+  text-align: center;
 }
 
 .customers td {
@@ -602,6 +602,7 @@ body {
 }
 
 .table td {
+  text-align: center;
   padding: 10px;
   border-bottom: 1px solid #ddd;
 }
@@ -963,4 +964,150 @@ body {
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
+}
+
+/* staff */
+.employees-page {
+  padding: 24px;
+  font-family: "Inter", sans-serif;
+  background: #f5f6fa;
+}
+
+/* Header */
+.employees-page .employees-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.employees-page .employees-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111;
+}
+
+.employees-page .btn-add-employee {
+  background: #4f46e5;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.employees-page .btn-add-employee:hover {
+  background: #4338ca;
+}
+
+/* Search box */
+.employees-page .search-box {
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  width: 280px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.employees-page .search-box input {
+  border: none;
+  outline: none;
+  margin-left: 8px;
+  width: 100%;
+  font-size: 14px;
+}
+
+/* Table */
+.employees-page .employees-table {
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  border-collapse: collapse;
+}
+
+.employees-page table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.employees-page thead tr {
+  background: #f1f2f6;
+  height: 48px;
+}
+
+.employees-page thead th {
+  font-size: 14px;
+  color: #555;
+  text-align: left;
+  padding: 12px;
+}
+
+.employees-page tbody tr {
+  border-bottom: 1px solid #eee;
+  height: 50px;
+}
+
+.employees-page tbody td {
+  padding: 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+.employees-page .emp-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.employees-page .status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.employees-page .status.active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.employees-page .status.offline {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Action buttons */
+.employees-page .action-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: 0.2s;
+}
+
+.employees-page .btn-edit {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.employees-page .btn-edit:hover {
+  background: #c7d2fe;
+}
+
+.employees-page .btn-delete {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.employees-page .btn-delete:hover {
+  background: #fecaca;
 }

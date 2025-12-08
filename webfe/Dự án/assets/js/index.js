@@ -30,7 +30,10 @@ function showPage(page) {
     case "settings":
       renderSettingsPage();
       break;
-
+    case "staff":
+      renderStaffPage();
+      break;
+      
     default:
       content.innerHTML = `<h2>${page} đang được phát triển...</h2>`;
   }

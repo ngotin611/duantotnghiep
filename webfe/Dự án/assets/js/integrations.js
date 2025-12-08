@@ -10,7 +10,7 @@ function renderIntegrationsPage() {
           <img src="../assets/img/qr_momo.png" alt="MoMo">
           <h3>MoMo Payment</h3>
           <p>Cổng thanh toán điện tử phổ biến tại Việt Nam.</p>
-          <button class="btn disconnect">Ngắt kết nối</button>
+          <button class="btn connect">Kết nối</button>
         </div>
 
         <div class="integration-card">
@@ -24,14 +24,14 @@ function renderIntegrationsPage() {
           <img src="../assets/img/logo_ghn.png" alt="GHN">
           <h3>Giao Hàng Nhanh</h3>
           <p>Tự động tạo đơn vận chuyển sau khi đặt hàng.</p>
-          <button class="btn disconnect">Ngắt kết nối</button>
+          <button class="btn disconnect">Đang phát triển</button>
         </div>
 
         <div class="integration-card">
           <img src="../assets/img/logo_mailchimp.png" alt="Mailchimp">
           <h3>Mailchimp</h3>
           <p>Gửi email marketing tự động cho khách hàng thân thiết.</p>
-          <button class="btn connect">Kết nối</button>
+          <button class="btn disconnect">Đang phát triển</button>
         </div>
       </div>
     </section>

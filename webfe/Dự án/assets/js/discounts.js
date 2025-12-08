@@ -7,7 +7,7 @@ function renderDiscountsPage() {
       <div class="discount-summary">
         <div class="discount-card highlight">
           <h3>Mã phổ biến</h3>
-          <p>3 mã đang hoạt động</p>
+          <p>1 mã đang hoạt động</p>
         </div>
         <div class="discount-card">
           <h3>Tổng lượt sử dụng</h3>
@@ -34,15 +34,15 @@ function renderDiscountsPage() {
             <td><strong>GIAM10</strong></td>
             <td>Giảm 10% cho đơn trên 50,000đ</td>
             <td>10%</td>
-            <td>31/12/2025</td>
-            <td><span class="status active">Đang áp dụng</span></td>
+            <td>01/01/2026</td>
+            <td><span class="status active">Chưa áp dụng</span></td>
           </tr>
           <tr>
             <td><strong>FREESHIP</strong></td>
             <td>Miễn phí giao hàng nội thành</td>
             <td>-</td>
-            <td>30/11/2025</td>
-            <td><span class="status active">Đang áp dụng</span></td>
+            <td>01/01/2026</td>
+            <td><span class="status active">Chưa áp dụng</span></td>
           </tr>
           <tr>
             <td><strong>VIP20</strong></td>
@@ -55,8 +55,8 @@ function renderDiscountsPage() {
             <td><strong>NEW5</strong></td>
             <td>Giảm 5% cho khách hàng mới</td>
             <td>5%</td>
-            <td>31/03/2026</td>
-            <td><span class="status active">Đang áp dụng</span></td>
+            <td>01/01/2026</td>
+            <td><span class="status active">Chưa áp dụng</span></td>
           </tr>
         </tbody>
       </table>
