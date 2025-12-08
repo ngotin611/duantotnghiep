@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#FFFFFF">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Thông tin đơn hàng"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#1A1A1A"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Loại đơn -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Loại đơn:"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginBottom="8dp" />
+
+    <RadioGroup
+        android:id="@+id/orderTypeGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <RadioButton
+            android:id="@+id/rbTable"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Tại quán"
+            android:checked="true"
+            android:textSize="14sp" />
+
+        <RadioButton
+            android:id="@+id/rbTakeAway"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Mang đi"
+            android:textSize="14sp" />
+    </RadioGroup>
+
+    <!-- Số bàn -->
+    <EditText
+        android:id="@+id/edtTableNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nhập số bàn (VD: 1, 2, 3...)"
+        android:inputType="number"
+        android:padding="12dp"
+        android:background="@drawable/border_button"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Ghi chú -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ghi chú (tùy chọn):"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/edtNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="VD: Ít cay, không đá, thêm sốt..."
+        android:inputType="textMultiLine"
+        android:minLines="2"
+        android:maxLines="3"
+        android:padding="12dp"
+        android:background="@drawable/border_button"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Nút xác nhận / hủy -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/btnCancelOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hủy"
+            android:textColor="#666666"
+            android:backgroundTint="#E0E0E0"
+            android:paddingHorizontal="24dp"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/btnConfirmOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tạo đơn"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FF5722"
+            android:paddingHorizontal="24dp" />
+    </LinearLayout>
+
+</LinearLayout>
+
+
+

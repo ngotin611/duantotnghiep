@@ -14,20 +14,11 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText editTextEmail, editTextPassword;
     private Button btnLogin;
-    private TextView txtToRegister;
+    private TextView txtToRegister, txtForgotPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // ✅ Nếu đã đăng nhập rồi thì đi thẳng vào MainActivity, không hiện màn login nữa
-        boolean isLoggedIn = getSharedPreferences("app_prefs", MODE_PRIVATE)
-                .getBoolean("is_logged_in", false);
-        if (isLoggedIn) {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            finish();
-            return;
-        }
 
         setContentView(R.layout.activity_login);
 
@@ -35,11 +26,15 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextPassword);
         btnLogin = findViewById(R.id.btnLogin);
         txtToRegister = findViewById(R.id.txtToRegister);
+        txtForgotPassword = findViewById(R.id.txtForgotPassword);
 
         btnLogin.setOnClickListener(v -> handleLogin());
         txtToRegister.setOnClickListener(v -> {
             startActivity(new Intent(LoginActivity.this, SignActivity.class));
             finish();
+        });
+        txtForgotPassword.setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
         });
     }
 
@@ -74,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
             reader.close();
 
             if (found) {
-                onLoginSuccess(email);
+                onLoginSuccess();
             } else {
                 Toast.makeText(this, "Sai email hoặc mật khẩu", Toast.LENGTH_SHORT).show();
             }
@@ -84,17 +79,10 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    // ✅ Xử lý đăng nhập thành công
-    private void onLoginSuccess(String userEmail) {
-        // Lưu trạng thái đăng nhập
-        getSharedPreferences("app_prefs", MODE_PRIVATE)
-                .edit()
-                .putBoolean("is_logged_in", true)
-                .putString("user_email", userEmail)
-                .apply();
-
+    // Đăng nhập thành công → vào TableSelectionActivity để chọn bàn
+    private void onLoginSuccess() {
         Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        startActivity(new Intent(LoginActivity.this, TableSelectionActivity.class));
         finish();
     }
 }

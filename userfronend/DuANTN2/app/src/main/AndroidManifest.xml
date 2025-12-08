@@ -31,6 +31,30 @@
             android:exported="false"
             android:label="Đăng ký" />
 
+        <!--  Màn hình quên mật khẩu -->
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false"
+            android:label="Quên mật khẩu" />
+
+        <!--  Màn hình xác nhận OTP -->
+        <activity
+            android:name=".VerifyOTPActivity"
+            android:exported="false"
+            android:label="Xác nhận OTP" />
+
+        <!--  Màn hình đặt lại mật khẩu -->
+        <activity
+            android:name=".ResetPasswordActivity"
+            android:exported="false"
+            android:label="Đặt lại mật khẩu" />
+
+        <!--  Màn hình chọn bàn -->
+        <activity
+            android:name=".TableSelectionActivity"
+            android:exported="false"
+            android:label="Chọn bàn" />
+
         <!--  Màn hình chính: không còn là LAUNCHER -->
         <activity
             android:name=".MainActivity"
@@ -68,10 +92,11 @@
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
-        <!--  Màn hình đơn hàng -->
+        <!--  Màn hình lịch sử thanh toán -->
         <activity
-            android:name=".OrdersActivity"
+            android:name=".PaymentHistoryActivity"
             android:exported="false"
+            android:label="Lịch sử thanh toán"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <!--  Màn hình cài đặt -->

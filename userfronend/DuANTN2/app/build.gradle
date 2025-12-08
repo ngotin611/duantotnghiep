@@ -32,8 +32,24 @@ android {
         viewBinding true
     }
 
-    packagingOptions {
-        exclude '/META-INF/{AL2.0,LGPL2.1}'
+    packaging {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+            excludes += 'META-INF/DEPENDENCIES'
+            excludes += 'META-INF/LICENSE'
+            excludes += 'META-INF/LICENSE.txt'
+            excludes += 'META-INF/LICENSE.md'
+            excludes += 'META-INF/license.txt'
+            excludes += 'META-INF/NOTICE'
+            excludes += 'META-INF/NOTICE.txt'
+            excludes += 'META-INF/NOTICE.md'
+            excludes += 'META-INF/notice.txt'
+            excludes += 'META-INF/ASL2.0'
+            excludes += 'META-INF/*.kotlin_module'
+        }
+        pickFirsts += 'META-INF/LICENSE.md'
+        pickFirsts += 'META-INF/NOTICE.md'
+        pickFirsts += 'META-INF/NOTICE.txt'
     }
 }
 
@@ -44,6 +60,10 @@ dependencies {
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.squareup.picasso:picasso:2.71828'
+    
+    // JavaMail API để gửi email
+    implementation 'com.sun.mail:android-mail:1.6.7'
+    implementation 'com.sun.mail:android-activation:1.6.7'
 
 
 

@@ -14,11 +14,11 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Order ID and Date -->
+        <!-- Mã đơn + ngày -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="4dp">
 
             <TextView
                 android:id="@+id/order_id_text"
@@ -34,12 +34,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:text="2023-10-26"
+                android:text="2024-01-01"
                 android:textColor="#666666"
                 android:textSize="12sp" />
         </RelativeLayout>
 
-        <!-- Food Item Details -->
+        <!-- Bàn / loại đơn -->
+        <TextView
+            android:id="@+id/table_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bàn: 1 · Tại quán"
+            android:textColor="#777777"
+            android:textSize="13sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Chi tiết món -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -83,25 +93,34 @@
                     android:id="@+id/price_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Giá: 60.000 VNĐ"
+                    android:text="Tổng: 60.000 VNĐ"
                     android:textColor="#FF5722"
                     android:textSize="14sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Status -->
+        <!-- Trạng thái + ghi chú -->
         <TextView
             android:id="@+id/status_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Trạng thái: Đang xử lý"
+            android:text="Trạng thái: Đang chuẩn bị"
             android:textColor="#2196F3"
             android:textSize="14sp"
             android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/note_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ghi chú: Ít đá, ít cay"
+            android:textColor="#666666"
+            android:textSize="13sp"
             android:layout_marginBottom="12dp" />
 
-        <!-- Action Buttons -->
+        <!-- Nút hành động -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -112,12 +131,11 @@
                 android:id="@+id/reorder_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:text="Đặt lại"
+                android:text="Cập nhật trạng thái"
                 android:textColor="#FFFFFF"
                 android:background="@drawable/rounded_button_background"
                 android:layout_marginEnd="8dp"
-                android:paddingHorizontal="16dp"
-                android:visibility="gone" />
+                android:paddingHorizontal="16dp" />
 
             <Button
                 android:id="@+id/cancel_btn"
@@ -126,8 +144,9 @@
                 android:text="Hủy đơn"
                 android:textColor="#FF5722"
                 android:background="@drawable/rounded_border_button_background"
-                android:paddingHorizontal="16dp"
-                android:visibility="gone" />
+                android:paddingHorizontal="16dp" />
         </LinearLayout>
+
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>

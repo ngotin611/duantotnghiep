@@ -76,4 +76,14 @@ public class ManagmentCart {
     public void clearCart() {
         tinyDB.remove("CartList");
     }
+
+    // Xóa món khỏi giỏ hàng
+    public void deleteFood(ArrayList<FoodDomain> listfood, int position, ChangeNumberItemsListener changeNumberItemsListener) {
+        if (position >= 0 && position < listfood.size()) {
+            listfood.remove(position);
+            tinyDB.putListObject("CartList", listfood);
+            changeNumberItemsListener.changed();
+            Toast.makeText(context, "Đã xóa món khỏi giỏ hàng", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

@@ -1,9 +1,8 @@
 package com.example.duantn;
 
-import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -11,76 +10,78 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import com.example.duantn.helper.EmailService;
+import com.example.duantn.helper.OTPManager;
+import com.example.duantn.helper.UserManager;
 
-public class  ForgotPasswordActivity extends AppCompatActivity {
+public class ForgotPasswordActivity extends AppCompatActivity {
 
     private EditText editTextEmail;
-    private Button btnSendCode;
+    private Button btnSendOTP;
     private TextView tvBackToLogin;
+    private OTPManager otpManager;
+    private UserManager userManager;
+    private EmailService emailService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgot_password);
 
+        otpManager = new OTPManager(this);
+        userManager = new UserManager(this);
+        emailService = new EmailService(this);
+
         editTextEmail = findViewById(R.id.editTextEmail);
-        btnSendCode = findViewById(R.id.btnSendCode);
+        btnSendOTP = findViewById(R.id.btnSendOTP);
         tvBackToLogin = findViewById(R.id.tvBackToLogin);
 
-        btnSendCode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String inputEmail = editTextEmail.getText().toString().trim();
-
-                if (TextUtils.isEmpty(inputEmail)) {
-                    Toast.makeText(ForgotPasswordActivity.this, "Vui lòng nhập email", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                String result = checkAccountInFile(inputEmail);
-                if (result != null) {
-                    new AlertDialog.Builder(ForgotPasswordActivity.this)
-                            .setTitle("Tài khoản tìm thấy")
-                            .setMessage("Mật khẩu của bạn là: " + result)
-                            .setPositiveButton("OK", null)
-                            .show();
-                } else {
-                    Toast.makeText(ForgotPasswordActivity.this, "Không tìm thấy tài khoản", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-        tvBackToLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish(); // Quay lại LoginActivity
-            }
-        });
+        btnSendOTP.setOnClickListener(v -> handleSendOTP());
+        tvBackToLogin.setOnClickListener(v -> finish());
     }
 
-    private String checkAccountInFile(String email) {
-        try {
-            FileInputStream fis = openFileInput("account.txt");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
-            String line;
+    private void handleSendOTP() {
+        String email = editTextEmail.getText().toString().trim();
 
-            while ((line = reader.readLine()) != null) {
-                // Format: tên,email,mật khẩu
-                String[] parts = line.split(",");
-                if (parts.length >= 3 && parts[1].equalsIgnoreCase(email)) {
-                    return parts[2]; // mật khẩu
-                }
-            }
-
-            reader.close();
-            fis.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (TextUtils.isEmpty(email)) {
+            Toast.makeText(this, "Vui lòng nhập email", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        return null;
+        // Kiểm tra định dạng email
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Email không hợp lệ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Kiểm tra email có tồn tại trong hệ thống không
+        if (!userManager.emailExists(email)) {
+            Toast.makeText(this, "Email này chưa được đăng ký", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Tạo và gửi mã OTP
+        String otp = otpManager.generateOTP();
+        otpManager.saveOTP(email, otp);
+        
+        // Hiển thị mã OTP trong Toast để test (tạm thời)
+        Toast.makeText(this, 
+            "Đang gửi email...\nMã OTP (để test): " + otp + 
+            "\n\nKiểm tra Logcat để xem chi tiết", 
+            Toast.LENGTH_LONG).show();
+        
+        android.util.Log.d("ForgotPassword", "Mã OTP đã tạo: " + otp);
+        android.util.Log.d("ForgotPassword", "Email nhận: " + email);
+        
+        emailService.sendOTPEmail(email, otp);
+
+        // Đợi 2 giây rồi chuyển màn hình (để email có thời gian gửi)
+        new android.os.Handler().postDelayed(() -> {
+            // Chuyển đến màn hình xác nhận OTP
+            Intent intent = new Intent(ForgotPasswordActivity.this, VerifyOTPActivity.class);
+            intent.putExtra("email", email);
+            startActivity(intent);
+            finish();
+        }, 2000);
     }
 }

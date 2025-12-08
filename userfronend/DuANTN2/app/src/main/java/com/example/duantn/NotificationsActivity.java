@@ -1,5 +1,6 @@
 package com.example.duantn;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,9 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.duantn.R;
 import com.example.duantn.adapter.NotificationAdapter;
 import com.example.duantn.models.NotificationDomain;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 
@@ -35,6 +36,7 @@ public class NotificationsActivity extends AppCompatActivity implements Notifica
         initNotifications();
         setupRecyclerView();
         setupClickListeners();
+        setupBottomNavigation();
     }
 
     private void initViews() {
@@ -155,5 +157,35 @@ public class NotificationsActivity extends AppCompatActivity implements Notifica
         notification.setIsRead(true);
         adapter.notifyDataSetChanged();
         Toast.makeText(this, "Đã đánh dấu đã đọc", Toast.LENGTH_SHORT).show();
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        if (bottomNavigationView != null) {
+            // Đánh dấu mục Thông báo là đang được chọn
+            bottomNavigationView.setSelectedItemId(R.id.nav_notifications);
+            
+            bottomNavigationView.setOnItemSelectedListener(item -> {
+                int itemId = item.getItemId();
+
+                if (itemId == R.id.nav_home) {
+                    Intent intent = new Intent(NotificationsActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_notifications) {
+                    // Đã ở màn thông báo
+                    return true;
+                } else if (itemId == R.id.nav_settings) {
+                    Intent intent = new Intent(NotificationsActivity.this, SettingsActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                }
+
+                return false;
+            });
+        }
     }
 }

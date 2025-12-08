@@ -21,7 +21,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Đặt hàng thành công!"
+        android:text="Thanh toán thành công!"
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="#1A1A1A"
@@ -30,7 +30,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cảm ơn bạn đã đặt hàng. Chúng tôi sẽ giao hàng trong 30-45 phút."
         android:textSize="14sp"
         android:textColor="#666666"
         android:gravity="center"

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.duantn.R;
 import com.example.duantn.helper.ChangeNumberItemsListener;
+import com.example.duantn.helper.ManagmentCart;
 import com.example.duantn.models.FoodDomain;
 import com.squareup.picasso.Picasso;
 
@@ -24,11 +25,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     private ArrayList<FoodDomain> items;
     private Context context;
     private ChangeNumberItemsListener changeNumberItemsListener;
+    private ManagmentCart managmentCart;
 
     public CartAdapter(ArrayList<FoodDomain> items, Context context, ChangeNumberItemsListener changeNumberItemsListener) {
         this.items = items;
         this.context = context;
         this.changeNumberItemsListener = changeNumberItemsListener;
+        this.managmentCart = new ManagmentCart(context);
     }
 
     @NonNull
@@ -60,6 +63,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
         holder.btnPlus.setOnClickListener(v -> {
             item.setNumberInCart(item.getNumberInCart() + 1);
+            // Lưu lại vào giỏ hàng
+            managmentCart.insertFood(item);
             notifyItemChanged(position);
             changeNumberItemsListener.changed();
         });
@@ -67,9 +72,26 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.btnMinus.setOnClickListener(v -> {
             if (item.getNumberInCart() > 1) {
                 item.setNumberInCart(item.getNumberInCart() - 1);
+                // Lưu lại vào giỏ hàng
+                managmentCart.insertFood(item);
                 notifyItemChanged(position);
                 changeNumberItemsListener.changed();
             }
+        });
+
+        // Nút xóa món
+        holder.btnDelete.setOnClickListener(v -> {
+            // Xóa món khỏi danh sách
+            items.remove(position);
+            // Lưu lại giỏ hàng đã cập nhật
+            managmentCart.clearCart();
+            for (FoodDomain food : items) {
+                managmentCart.insertFood(food);
+            }
+            // Cập nhật UI
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, items.size());
+            changeNumberItemsListener.changed();
         });
     }
 
@@ -80,7 +102,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitle, txtFeeEachItem, txtTotalEachItem, txtNumberInCart;
-        ImageView imgFood, btnPlus, btnMinus;
+        ImageView imgFood, btnPlus, btnMinus, btnDelete;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -91,6 +113,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             imgFood = itemView.findViewById(R.id.imgFood);
             btnPlus = itemView.findViewById(R.id.btnPlus);
             btnMinus = itemView.findViewById(R.id.btnMinus);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
 }

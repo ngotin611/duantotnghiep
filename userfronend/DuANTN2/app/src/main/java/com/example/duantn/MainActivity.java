@@ -22,6 +22,7 @@ import com.example.duantn.NotificationsActivity;
 import com.example.duantn.SettingsActivity;
 import com.example.duantn.adapter.FoodAdapter;
 import com.example.duantn.helper.ManagmentCart;
+import com.example.duantn.helper.TableManager;
 import com.example.duantn.models.FoodDomain;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -45,6 +46,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Kiểm tra đã chọn bàn chưa, nếu chưa thì chuyển đến màn hình chọn bàn
+        TableManager tableManager = new TableManager(this);
+        if (!tableManager.isTableSelected()) {
+            Intent intent = new Intent(MainActivity.this, TableSelectionActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
 
         recyclerView = findViewById(R.id.gridView);
         searchEdt = findViewById(R.id.edt_search);
@@ -224,24 +234,31 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupBottomNavigation() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
+        if (bottomNavigationView != null) {
+            // Đánh dấu mục Home là đang được chọn
+            bottomNavigationView.setSelectedItemId(R.id.nav_home);
+            
+            bottomNavigationView.setOnItemSelectedListener(item -> {
+                int itemId = item.getItemId();
 
-            if (itemId == R.id.nav_home) {
-                // Đã ở màn home
-                return true;
-            } else if (itemId == R.id.nav_notifications) {
-                Intent intent = new Intent(MainActivity.this, NotificationsActivity.class);
-                startActivity(intent);
-                return true;
-            } else if (itemId == R.id.nav_settings) {
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
-                return true;
-            }
+                if (itemId == R.id.nav_home) {
+                    // Đã ở màn home, không làm gì
+                    return true;
+                } else if (itemId == R.id.nav_notifications) {
+                    Intent intent = new Intent(MainActivity.this, NotificationsActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_settings) {
+                    Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                }
 
-            return false;
-        });
+                return false;
+            });
+        }
     }
 
     private void updateCartBadge() {

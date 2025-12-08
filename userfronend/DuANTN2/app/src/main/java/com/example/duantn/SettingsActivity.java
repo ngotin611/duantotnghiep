@@ -9,13 +9,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import android.widget.LinearLayout;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private ImageView btnBack;
     private Switch notificationSwitch, soundSwitch, twoFactorSwitch;
     private LinearLayout languageSetting, passwordSetting, twoFactorSetting;
-    private LinearLayout paymentMethods, walletSetting, addressSetting;
+    private LinearLayout paymentMethods, walletSetting, paymentHistorySetting, addressSetting;
     private LinearLayout contactSupport, faqSetting, rateApp;
     private View btnLogout;
 
@@ -27,6 +28,7 @@ public class SettingsActivity extends AppCompatActivity {
         initViews();
         setupClickListeners();
         loadSettings();
+        setupBottomNavigation();
     }
 
     private void initViews() {
@@ -40,6 +42,7 @@ public class SettingsActivity extends AppCompatActivity {
         twoFactorSetting = findViewById(R.id.two_factor_setting);
         paymentMethods = findViewById(R.id.payment_methods);
         walletSetting = findViewById(R.id.wallet_setting);
+        paymentHistorySetting = findViewById(R.id.payment_history_setting);
         addressSetting = findViewById(R.id.address_setting);
         contactSupport = findViewById(R.id.contact_support);
         faqSetting = findViewById(R.id.faq_setting);
@@ -68,6 +71,10 @@ public class SettingsActivity extends AppCompatActivity {
 
         paymentMethods.setOnClickListener(v -> showPaymentMethodsDialog());
         walletSetting.setOnClickListener(v -> showWalletDialog());
+        paymentHistorySetting.setOnClickListener(v -> {
+            Intent intent = new Intent(SettingsActivity.this, PaymentHistoryActivity.class);
+            startActivity(intent);
+        });
 
         addressSetting.setOnClickListener(v -> showAddressDialog());
 
@@ -146,5 +153,35 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void saveTwoFactorSetting(boolean enabled) {
         // TODO: Lưu cài đặt xác thực 2 yếu tố vào SharedPreferences
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        if (bottomNavigationView != null) {
+            // Đánh dấu mục Cài đặt là đang được chọn
+            bottomNavigationView.setSelectedItemId(R.id.nav_settings);
+            
+            bottomNavigationView.setOnItemSelectedListener(item -> {
+                int itemId = item.getItemId();
+
+                if (itemId == R.id.nav_home) {
+                    Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_notifications) {
+                    Intent intent = new Intent(SettingsActivity.this, NotificationsActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_settings) {
+                    // Đã ở màn cài đặt
+                    return true;
+                }
+
+                return false;
+            });
+        }
     }
 }

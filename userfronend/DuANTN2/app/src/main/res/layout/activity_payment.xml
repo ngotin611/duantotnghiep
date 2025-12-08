@@ -86,15 +86,15 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Địa chỉ giao hàng:"
+                    android:text="Thông tin đơn:"
                     android:textSize="14sp"
                     android:textColor="#666666" />
 
                 <TextView
-                    android:id="@+id/deliveryAddressTxt"
+                    android:id="@+id/tableInfoTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="123 Đường ABC, Quận 1, TPHCM"
+                    android:text="Bàn: -"
                     android:textSize="14sp"
                     android:textColor="#333333"
                     android:layout_marginStart="8dp"/>
