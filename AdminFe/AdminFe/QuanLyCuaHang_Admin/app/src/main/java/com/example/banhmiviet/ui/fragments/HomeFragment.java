@@ -87,13 +87,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        cardCustomers.setOnClickListener(v -> {
-            if (getActivity() instanceof com.example.banhmiviet.MainActivity) {
-                ((com.example.banhmiviet.MainActivity) getActivity()).openCustomers();
-            } else {
-                // TODO: mở CustomerFragment nếu có
-            }
-        });
 
         cardRevenue.setOnClickListener(v -> {
             if (getActivity() instanceof com.example.banhmiviet.MainActivity) {

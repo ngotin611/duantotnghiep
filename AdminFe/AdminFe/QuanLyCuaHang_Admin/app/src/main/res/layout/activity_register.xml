@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/tvRegTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đăng ký tài khoản nhân viên"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="20dp" />
+
+        <EditText
+            android:id="@+id/edtRegName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Họ và tên"
+            android:padding="12dp"
+            android:background="@drawable/bg_input" />
+
+        <EditText
+            android:id="@+id/edtRegPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Số điện thoại"
+            android:inputType="phone"
+            android:padding="12dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_input" />
+
+        <EditText
+            android:id="@+id/edtRegEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email (có thể bỏ trống)"
+            android:inputType="textEmailAddress"
+            android:padding="12dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_input" />
+
+        <EditText
+            android:id="@+id/edtRegAge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Tuổi"
+            android:inputType="number"
+            android:padding="12dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_input" />
+
+        <RadioGroup
+            android:id="@+id/radioRegGender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
+
+            <RadioButton
+                android:id="@+id/rbRegMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nam" />
+
+            <RadioButton
+                android:id="@+id/rbRegFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nữ"
+                android:layout_marginStart="16dp" />
+
+            <RadioButton
+                android:id="@+id/rbRegOther"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Khác"
+                android:layout_marginStart="16dp" />
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/edtRegUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Tài khoản đăng nhập"
+            android:padding="12dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_input" />
+
+        <EditText
+            android:id="@+id/edtRegPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Mật khẩu"
+            android:inputType="textPassword"
+            android:padding="12dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_input" />
+
+        <Button
+            android:id="@+id/btnSubmitRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gửi yêu cầu đăng ký"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#34C759"
+            android:layout_marginTop="24dp" />
+
+    </LinearLayout>
+</ScrollView>

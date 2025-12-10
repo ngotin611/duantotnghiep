@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <!-- DashboardActivity (thêm vào) -->
-
+        <activity android:name=".controller.RegisterActivity" />
         <!-- MainActivity: không còn LAUNCHER -->
         <activity
             android:name=".MainActivity"

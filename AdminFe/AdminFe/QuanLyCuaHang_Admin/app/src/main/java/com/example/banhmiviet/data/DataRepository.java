@@ -1,6 +1,7 @@
 package com.example.banhmiviet.data;
 
 import com.example.banhmiviet.R;
+import com.example.banhmiviet.model.CartItem;
 import com.example.banhmiviet.model.Customer;
 import com.example.banhmiviet.model.Employee;
 import com.example.banhmiviet.model.InventoryItem;
@@ -9,7 +10,6 @@ import com.example.banhmiviet.model.Product;
 import com.example.banhmiviet.model.RevenuePoint;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,10 +26,10 @@ public class DataRepository {
 
     private DataRepository() {
         mockProducts();
+        mockInventory();
         mockOrders();
         mockCustomers();
         mockEmployees();
-        mockInventory();
         mockRevenue();
     }
 
@@ -44,11 +44,18 @@ public class DataRepository {
     private void mockProducts() {
         products.clear();
         products.add(new Product("P01", "Bánh mì thịt", 15000,
-                "Bánh mì thịt truyền thống", "Bánh mì", R.drawable.ic_launcher_foreground));
+                "Bánh mì thịt truyền thống", "Bánh mì", R.drawable.image));
         products.add(new Product("P02", "Hamburger bò", 35000,
-                "Hamburger bò phô mai", "Hamburger", R.drawable.ic_launcher_foreground));
+                "Hamburger bò phô mai", "Hamburger", R.drawable.image));
         products.add(new Product("P03", "Pizza phô mai", 69000,
-                "Pizza phô mai 4 loại", "Pizza", R.drawable.ic_launcher_foreground));
+                "Pizza phô mai 4 loại", "Pizza", R.drawable.image));
+    }
+
+    private void mockInventory() {
+        inventoryItems.clear();
+        inventoryItems.add(new InventoryItem("P01", "Bánh mì thịt", 100));
+        inventoryItems.add(new InventoryItem("P02", "Hamburger bò", 30));
+        inventoryItems.add(new InventoryItem("P03", "Pizza phô mai", 10));
     }
 
     private void mockOrders() {
@@ -63,7 +70,8 @@ public class DataRepository {
                 1,
                 Order.STATUS_NEW,
                 now - 60 * 60 * 1000,
-                "Nguyễn Văn A"
+                "Nguyễn Văn A",
+                null   // demo chưa có items chi tiết
         ));
 
         orders.add(new Order(
@@ -74,7 +82,8 @@ public class DataRepository {
                 null,
                 Order.STATUS_NEW,
                 now - 30 * 60 * 1000,
-                "Trần Thị B"
+                "Trần Thị B",
+                null
         ));
     }
 
@@ -95,13 +104,6 @@ public class DataRepository {
         employees.add(new Employee("E03", "Hoàng Văn C", "Bán hàng",
                 "0934 333 333", "c@sapo.com", 25, "Nam",
                 "seller01", "123456"));
-    }
-
-    private void mockInventory() {
-        inventoryItems.clear();
-        inventoryItems.add(new InventoryItem("P01", "Bánh mì thịt", 100));
-        inventoryItems.add(new InventoryItem("P02", "Hamburger bò", 30));
-        inventoryItems.add(new InventoryItem("P03", "Pizza phô mai", 10));
     }
 
     private void mockRevenue() {
@@ -126,26 +128,31 @@ public class DataRepository {
         return new ArrayList<>(inventoryItems);
     }
 
+    // Tìm product theo id để dùng ở Kho
+    public Product findProductById(String id) {
+        if (id == null) return null;
+        for (Product p : products) {
+            if (id.equals(p.getId())) return p;
+        }
+        return null;
+    }
+
     // ========= ORDER ACTIONS =========
 
     public void addOrder(Order order) {
         orders.add(order);
 
+        // mock revenue theo đơn
         revenuePoints.add(new RevenuePoint(
                 "D" + (revenuePoints.size() + 1),
                 order.getTotalPrice()
         ));
     }
 
+    // Giữ để dùng chỗ cũ nếu muốn, nhưng hiện tại bạn chọn trừ kho LÚC THANH TOÁN
     public void addOrderWithDetails(Order order, Map<Product, Integer> selectedProducts) {
         addOrder(order);
-
-        if (selectedProducts != null) {
-            for (Product product : selectedProducts.keySet()) {
-                int qty = selectedProducts.get(product);
-                decreaseStock(product.getId(), qty);
-            }
-        }
+        // KHÔNG trừ kho tại đây nữa
     }
 
     public void removeOrder(int index) {
@@ -153,6 +160,59 @@ public class DataRepository {
             orders.remove(index);
         }
     }
+
+    // 🆕 Trừ kho khi thanh toán đơn
+    // ========= APPLY STOCK WHEN ORDER PAID =========
+    public void applyStockForPaidOrder(Order order) {
+        if (order == null) return;
+
+        // Chỉ trừ kho nếu đơn đang ở trạng thái NEW
+        if (!Order.STATUS_NEW.equals(order.getStatus())) {
+            return;
+        }
+
+        String desc = order.getDescription();
+        if (desc == null || desc.trim().isEmpty()) return;
+
+        // Lấy danh sách sản phẩm để map tên -> id
+        List<Product> productList = getProducts();
+
+        // Chuỗi mô tả dạng: "2x Bánh mì thịt, 1x Coca"
+        String[] parts = desc.split(",");
+        for (String part : parts) {
+            String itemStr = part.trim();
+            if (itemStr.isEmpty()) continue;
+
+            int qty = 1;
+            String nameText = itemStr;
+
+            int xIndex = itemStr.indexOf("x");
+            if (xIndex > 0) {
+                // bên trái "x" là số lượng
+                String qtyStr = itemStr.substring(0, xIndex).trim();
+                try {
+                    qty = Integer.parseInt(qtyStr);
+                } catch (NumberFormatException e) {
+                    qty = 1;
+                }
+                // bên phải "x" là tên món
+                nameText = itemStr.substring(xIndex + 1).trim();
+            }
+
+            String normalizedName = nameText.toLowerCase();
+
+            // Tìm product có tên khớp để trừ kho theo id
+            for (Product p : productList) {
+                if (p.getName() == null) continue;
+                if (p.getName().trim().toLowerCase().equals(normalizedName)) {
+                    // Trừ kho theo productId
+                    decreaseStock(p.getId(), qty);
+                    break;
+                }
+            }
+        }
+    }
+
 
     // ========= INVENTORY =========
 
@@ -195,11 +255,24 @@ public class DataRepository {
     }
 
     // ========= PRODUCT ACTION =========
-    public void addProduct(Product p) { products.add(p); }
+    public void addProduct(Product p) {
+        products.add(p);
+        // 🆕 sản phẩm mới -> kho cũng có 1 dòng với tồn = 0
+        inventoryItems.add(new InventoryItem(
+                p.getId(),
+                p.getName(),
+                0
+        ));
+    }
 
     public void updateProduct(int index, Product p) {
         if (index >= 0 && index < products.size()) {
             products.set(index, p);
+        }
+        // Cập nhật tên trong Inventory nếu trùng id
+        InventoryItem item = findInventoryByProductId(p.getId());
+        if (item != null) {
+            item.setProductName(p.getName());
         }
     }
 
@@ -211,8 +284,8 @@ public class DataRepository {
         return sum;
     }
 
-    public int getTotalOrderCount() { return orders.size(); }
-    public int getTotalProductCount() { return products.size(); }
+    public int getTotalOrderCount()    { return orders.size(); }
+    public int getTotalProductCount()  { return products.size(); }
     public int getTotalCustomerCount() { return customers.size(); }
     public int getTotalEmployeeCount() { return employees.size(); }
 }

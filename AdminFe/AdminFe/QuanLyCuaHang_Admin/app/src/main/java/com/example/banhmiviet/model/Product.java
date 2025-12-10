@@ -10,6 +10,9 @@ public class Product {
     private int imageResId;    // icon mặc định (mock)
     private String imageUri;   // ảnh chọn từ thiết bị (content://...)
 
+    // 🆕 tồn kho hiện tại
+    private int stock;
+
     // Constructor đang dùng trong DataRepository (mock)
     public Product(String id, String name, double price,
                    String description, String category, int imageResId) {
@@ -19,6 +22,7 @@ public class Product {
         this.description = description;
         this.category = category;
         this.imageResId = imageResId;
+        this.stock = 0; // mặc định 0, bạn set lại trong DataRepository
     }
 
     // Constructor mới có thêm imageUri
@@ -56,4 +60,8 @@ public class Product {
 
     public String getImageUri() { return imageUri; }
     public void setImageUri(String imageUri) { this.imageUri = imageUri; }
+
+    // 🆕 tồn kho
+    public int getStock() { return stock; }
+    public void setStock(int stock) { this.stock = stock; }
 }

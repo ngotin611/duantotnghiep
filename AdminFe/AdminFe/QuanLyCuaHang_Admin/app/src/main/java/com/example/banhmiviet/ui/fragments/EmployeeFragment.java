@@ -22,10 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.banhmiviet.R;
 import com.example.banhmiviet.data.DataRepository;
 import com.example.banhmiviet.model.Employee;
+import com.example.banhmiviet.model.User;
+import com.example.banhmiviet.model.UserRepository;
 import com.example.banhmiviet.ui.adapters.EmployeeAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EmployeeFragment extends Fragment {
 
@@ -57,6 +60,7 @@ public class EmployeeFragment extends Fragment {
                         employeeList.remove(position);
                         adapter.notifyItemRemoved(position);
                         repo.removeEmployee(position);
+                        // tuỳ bạn có muốn xoá luôn User tương ứng không, mình tạm thời không đụng
                     }
                 },
                 (position, emp) -> { // click item -> edit
@@ -66,7 +70,8 @@ public class EmployeeFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
-        fabAdd.setOnClickListener(v -> openEmployeeDialog(null, -1));
+        // Thay vì mở dialog add trực tiếp -> mở menu chọn thao tác
+        fabAdd.setOnClickListener(v -> showActionDialog());
 
         return view;
     }
@@ -96,7 +101,6 @@ public class EmployeeFragment extends Fragment {
                 edtPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 imgTogglePass.setImageResource(android.R.drawable.ic_menu_view);
             }
-            // giữ con trỏ ở cuối
             edtPassword.setSelection(edtPassword.getText().length());
         });
 
@@ -185,8 +189,140 @@ public class EmployeeFragment extends Fragment {
                         adapter.notifyItemChanged(editPosition);
                         repo.updateEmployee(editPosition, newEmp);
                     }
+
+                    // 🔹 Đồng bộ UserRepository để tài khoản này đăng nhập được
+                    User u = UserRepository.findByUsername(username);
+                    if (u == null) {
+                        // chưa có user -> tạo mới ACTIVE
+                        u = new User(
+                                username,
+                                password,
+                                "Nhân viên",
+                                User.Status.ACTIVE,
+                                name,
+                                phone,
+                                email,
+                                age,
+                                gender
+                        );
+                        UserRepository.addUser(u);
+                    } else {
+                        // đã có (ví dụ từ đăng ký) -> cập nhật info
+                        u.updateProfile(name, phone, email, age, gender);
+                        u.updatePassword(password);
+                        u.setStatus(User.Status.ACTIVE);
+                    }
                 })
                 .setNegativeButton("Hủy", null)
+                .show();
+    }
+
+    // ====== PHẦN MỚI: menu chọn thao tác ======
+    private void showActionDialog() {
+        if (getContext() == null) return;
+
+        String[] actions = {"Thêm nhân viên mới", "Duyệt yêu cầu đăng ký"};
+
+        new AlertDialog.Builder(getContext())
+                .setTitle("Chọn thao tác")
+                .setItems(actions, (dialog, which) -> {
+                    if (which == 0) {
+                        // Thêm nhân viên như cũ
+                        openEmployeeDialog(null, -1);
+                    } else if (which == 1) {
+                        // Mở màn xét duyệt
+                        openPendingApprovalDialog();
+                    }
+                })
+                .show();
+    }
+
+    // ====== PHẦN MỚI: dialog duyệt tài khoản đăng ký ======
+    private void openPendingApprovalDialog() {
+        if (getContext() == null) return;
+
+        List<User> pendingUsers = UserRepository.getPendingUsers();
+
+        if (pendingUsers.isEmpty()) {
+            Toast.makeText(getContext(),
+                    "Không có yêu cầu đăng ký nào đang chờ duyệt.",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String[] items = new String[pendingUsers.size()];
+        for (int i = 0; i < pendingUsers.size(); i++) {
+            User u = pendingUsers.get(i);
+            String displayName = (u.getName() != null && !u.getName().isEmpty())
+                    ? u.getName()
+                    : "(chưa có tên)";
+            items[i] = u.getUsername() + " - " + displayName;
+        }
+
+        final int[] selectedIndex = {-1};
+
+        new AlertDialog.Builder(getContext())
+                .setTitle("Yêu cầu đăng ký")
+                .setSingleChoiceItems(items, -1, (dialog, which) -> {
+                    selectedIndex[0] = which;
+                })
+                .setPositiveButton("Duyệt", (dialog, which) -> {
+                    if (selectedIndex[0] == -1) {
+                        Toast.makeText(getContext(),
+                                "Vui lòng chọn 1 tài khoản để duyệt.",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    User u = pendingUsers.get(selectedIndex[0]);
+                    UserRepository.updateStatus(u.getUsername(), User.Status.ACTIVE);
+
+                    // 🔹 Tạo Employee mới từ thông tin User và thêm vào danh sách
+                    String newId = "E" + String.format("%03d", employeeList.size() + 1);
+                    String name  = u.getName();
+                    String phone = u.getPhone();
+                    String email = u.getEmail();
+                    int age      = u.getAge();
+                    String gender = (u.getGender() != null && !u.getGender().isEmpty())
+                            ? u.getGender()
+                            : "Khác";
+
+                    Employee emp = new Employee(
+                            newId,
+                            name,
+                            "Nhân viên",
+                            phone,
+                            email,
+                            age,
+                            gender,
+                            u.getUsername(),
+                            u.getPassword()
+                    );
+
+                    employeeList.add(emp);
+                    adapter.notifyItemInserted(employeeList.size() - 1);
+                    repo.addEmployee(emp);
+
+                    Toast.makeText(getContext(),
+                            "Đã duyệt và thêm nhân viên: " + name,
+                            Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Từ chối", (dialog, which) -> {
+                    if (selectedIndex[0] == -1) {
+                        Toast.makeText(getContext(),
+                                "Vui lòng chọn 1 tài khoản để từ chối.",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    User u = pendingUsers.get(selectedIndex[0]);
+                    UserRepository.updateStatus(u.getUsername(), User.Status.REJECTED);
+
+                    Toast.makeText(getContext(),
+                            "Đã từ chối tài khoản: " + u.getUsername(),
+                            Toast.LENGTH_SHORT).show();
+                })
+                .setNeutralButton("Đóng", null)
                 .show();
     }
 }

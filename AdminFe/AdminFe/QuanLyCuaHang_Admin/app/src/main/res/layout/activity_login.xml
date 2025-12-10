@@ -72,6 +72,17 @@
             android:textColor="#FBFAFA"
             android:textStyle="bold"
             android:backgroundTint="#007AFF" />
+        <!-- Register Button -->
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="ĐĂNG KÝ TÀI KHOẢN"
+            android:textColor="#FBFAFA"
+            android:textStyle="bold"
+            android:backgroundTint="#34C759" />
+
 
     </LinearLayout>
 </ScrollView>

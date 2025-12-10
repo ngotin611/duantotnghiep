@@ -82,6 +82,11 @@ public class OrderFragment extends Fragment
 
             @Override
             public void onPay(Order order) {
+                // ✅ Chỉ TRỪ KHO nếu đơn đang là NEW, tránh trừ 2 lần
+                if (Order.STATUS_NEW.equals(order.getStatus())) {
+                    repo.applyStockForPaidOrder(order);
+                }
+
                 order.setStatus(Order.STATUS_PAID);
                 Toast.makeText(getContext(),
                         "Đã tất toán đơn #" + order.getId(), Toast.LENGTH_SHORT).show();
@@ -380,6 +385,11 @@ public class OrderFragment extends Fragment
 
         // Nút tất toán
         btnPay.setOnClickListener(v -> {
+            // ✅ Chỉ TRỪ KHO nếu đơn đang là NEW (tránh bấm lại trừ tiếp)
+            if (Order.STATUS_NEW.equals(order.getStatus())) {
+                repo.applyStockForPaidOrder(order);
+            }
+
             order.setStatus(Order.STATUS_PAID);
             refreshCurrentMode();
             Toast.makeText(getContext(),
@@ -426,6 +436,7 @@ public class OrderFragment extends Fragment
         if (Order.STATUS_CANCELLED.equals(status)) return "Đã hủy";
         return status;
     }
+
     @Override
     public void onResume() {
         super.onResume();

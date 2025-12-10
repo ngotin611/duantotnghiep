@@ -22,7 +22,6 @@ import com.example.banhmiviet.ui.fragments.OrderFragment;
 import com.example.banhmiviet.ui.fragments.ProductFragment;
 import com.example.banhmiviet.ui.fragments.SettingsFragment;
 import com.example.banhmiviet.ui.fragments.StatisticsFragment;
-import com.example.banhmiviet.ui.fragments.UserFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -80,9 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new ProductFragment();
             } else if (id == R.id.nav_employees) {
                 selectedFragment = new EmployeeFragment();
-            } else if (id == R.id.nav_users) {
-                selectedFragment = new UserFragment();
-            } else if (id == R.id.nav_inventory) {
+            }  else if (id == R.id.nav_inventory) {
                 selectedFragment = new InventoryFragment();
             } else if (id == R.id.nav_stats) {
                 selectedFragment = new StatisticsFragment();
@@ -163,15 +160,6 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout.closeDrawers();
     }
 
-    public void openCustomers() {
-        // mở UserFragment (biến thể màn quản lý khách/người dùng)
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, new UserFragment())
-                .commit();
-        if (navigationView != null) navigationView.setCheckedItem(R.id.nav_users);
-        drawerLayout.closeDrawers();
-    }
 
     public void openStatistics() {
         getSupportFragmentManager()
