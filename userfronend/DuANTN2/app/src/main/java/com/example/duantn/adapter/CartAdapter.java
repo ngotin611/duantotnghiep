@@ -55,10 +55,31 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.txtNumberInCart.setText(String.valueOf(item.getNumberInCart()));
         holder.txtTotalEachItem.setText(totalFormatted);
 
-        // Load ảnh từ drawable
-        int imageId = context.getResources().getIdentifier(item.getPic(), "drawable", context.getPackageName());
-        if (imageId != 0) {
-            Picasso.get().load(imageId).into(holder.imgFood);
+        // Load ảnh - hỗ trợ cả URL và resource drawable
+        String imagePath = item.getPic();
+        if (imagePath != null && !imagePath.isEmpty()) {
+            // Nếu là URL từ backend
+            if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+                Picasso.get()
+                        .load(imagePath)
+                        .placeholder(R.drawable.ic_launcher_bg)
+                        .error(R.drawable.ic_launcher_bg)
+                        .into(holder.imgFood);
+            } else {
+                // Nếu là tên resource drawable (ví dụ: "anh_1")
+                try {
+                    int imageId = context.getResources().getIdentifier(imagePath, "drawable", context.getPackageName());
+                    if (imageId != 0) {
+                        Picasso.get().load(imageId).into(holder.imgFood);
+                    } else {
+                        holder.imgFood.setImageResource(R.drawable.ic_launcher_bg);
+                    }
+                } catch (Exception e) {
+                    holder.imgFood.setImageResource(R.drawable.ic_launcher_bg);
+                }
+            }
+        } else {
+            holder.imgFood.setImageResource(R.drawable.ic_launcher_bg);
         }
 
         holder.btnPlus.setOnClickListener(v -> {

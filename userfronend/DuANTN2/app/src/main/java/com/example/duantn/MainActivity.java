@@ -8,11 +8,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -22,11 +25,25 @@ import com.example.duantn.NotificationsActivity;
 import com.example.duantn.SettingsActivity;
 import com.example.duantn.adapter.FoodAdapter;
 import com.example.duantn.helper.ManagmentCart;
+import com.example.duantn.helper.ProductMapper;
 import com.example.duantn.helper.TableManager;
+import com.example.duantn.interface_api.CategoryApi;
+import com.example.duantn.interface_api.ProductApi;
+import com.example.duantn.models.CategoryDomain;
 import com.example.duantn.models.FoodDomain;
+import com.example.duantn.models.product.ResponseProduct;
+import com.example.duantn.models.page.PageResponse;
+import com.example.duantn.retrofit.RetrofitClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +58,14 @@ public class MainActivity extends AppCompatActivity {
     private Button btnBanhMi, btnHamburger, btnPizza, btnNuocUong;
     private String currentCategory = "Tất cả";
     private String currentSearchText = "";
+    
+    // API services
+    private ProductApi productApi;
+    private CategoryApi categoryApi;
+    private ProgressBar progressBar;
+    
+    // Map để lưu category name theo ID
+    private Map<Long, String> categoryMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,19 +85,31 @@ public class MainActivity extends AppCompatActivity {
         searchEdt = findViewById(R.id.edt_search);
         cartBtn = findViewById(R.id.img_cart);
         cartBadge = findViewById(R.id.cart_badge);
+        progressBar = findViewById(R.id.progressBar); // Có thể null nếu layout chưa có ProgressBar
 
         btnBanhMi = findViewById(R.id.btn_banhmi);
         btnHamburger = findViewById(R.id.btn_hamburger);
         btnPizza = findViewById(R.id.btn_pizza);
         btnNuocUong = findViewById(R.id.btn_nuocuong);
 
-        initFoodList();
+        // Khởi tạo API services
+        productApi = RetrofitClient.getRetrofitInstance().create(ProductApi.class);
+        categoryApi = RetrofitClient.getRetrofitInstance().create(CategoryApi.class);
+
+        // Khởi tạo danh sách rỗng trước
+        allFoodList = new ArrayList<>();
+        foodList = new ArrayList<>();
+        
         setupRecyclerView();
         setupSearch();
         setupCart();
         setupCategoryButtons();
         setupBottomNavigation();
         updateCartBadge();
+        
+        // Load dữ liệu từ API
+        loadCategories();
+        loadProducts();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(cartUpdateReceiver, new IntentFilter("UPDATE_CART_BADGE"),
@@ -90,7 +127,108 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void initFoodList() {
+    /**
+     * Load danh sách categories từ API
+     */
+    private void loadCategories() {
+        Call<List<CategoryDomain>> call = categoryApi.getAllCategories();
+        call.enqueue(new Callback<List<CategoryDomain>>() {
+            @Override
+            public void onResponse(Call<List<CategoryDomain>> call, Response<List<CategoryDomain>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Lưu category map để dùng khi load products
+                    for (CategoryDomain category : response.body()) {
+                        if (category.getId() != null) {
+                            categoryMap.put(category.getId(), category.getTitle());
+                        }
+                    }
+                    Log.d("MainActivity", "Loaded " + categoryMap.size() + " categories");
+                } else {
+                    Log.e("MainActivity", "Failed to load categories: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<CategoryDomain>> call, Throwable t) {
+                Log.e("MainActivity", "Error loading categories", t);
+                // Nếu không load được category, vẫn tiếp tục load products
+            }
+        });
+    }
+
+    /**
+     * Load danh sách products từ API
+     */
+    /**
+     * Load danh sách products từ API
+     */
+    private void loadProducts() {
+        // Hiển thị loading indicator nếu có
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        // Gọi API lấy sản phẩm có phân trang (page=0, size=50, sort theo id tăng dần)
+        Call<PageResponse<ResponseProduct>> call = productApi.getProducts(0, 50, "id,asc");
+        call.enqueue(new Callback<PageResponse<ResponseProduct>>() {
+            @Override
+            public void onResponse(Call<PageResponse<ResponseProduct>> call, Response<PageResponse<ResponseProduct>> response) {
+                if (progressBar != null) {
+                    progressBar.setVisibility(View.GONE);
+                }
+
+                if (response.isSuccessful() && response.body() != null && response.body().getContent() != null) {
+                    // Chuyển đổi ResponseProduct sang FoodDomain
+                    List<ResponseProduct> products = response.body().getContent();
+                    List<FoodDomain> loadedFoods = ProductMapper.toFoodDomainList(products);
+                    
+                    // Set category name cho mỗi food
+                    for (int i = 0; i < products.size() && i < loadedFoods.size(); i++) {
+                        ResponseProduct product = products.get(i);
+                        FoodDomain food = loadedFoods.get(i);
+                        
+                        // Lấy category name từ map
+                        if (product.getIdCategory() != null && categoryMap.containsKey(product.getIdCategory())) {
+                            food.setCategory(categoryMap.get(product.getIdCategory()));
+                        } else {
+                            food.setCategory("Khác"); // Default category
+                        }
+                    }
+                    
+                    // Cập nhật danh sách
+                    allFoodList.clear();
+                    allFoodList.addAll(loadedFoods);
+                    
+                    // Áp dụng filter hiện tại
+                    filter();
+                    
+                    Log.d("MainActivity", "Loaded " + loadedFoods.size() + " products from API");
+                } else {
+                    Log.e("MainActivity", "Failed to load products: " + response.code());
+                    Toast.makeText(MainActivity.this, "Không thể tải danh sách sản phẩm. Mã lỗi: " + response.code(), Toast.LENGTH_SHORT).show();
+                    // Fallback: sử dụng dữ liệu mẫu nếu API thất bại
+                    initFoodListFallback();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PageResponse<ResponseProduct>> call, Throwable t) {
+                if (progressBar != null) {
+                    progressBar.setVisibility(View.GONE);
+                }
+                
+                Log.e("MainActivity", "Error loading products", t);
+                Toast.makeText(MainActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                // Fallback: sử dụng dữ liệu mẫu nếu API thất bại
+                initFoodListFallback();
+            }
+        });
+    }
+
+    /**
+     * Fallback: Load dữ liệu mẫu nếu API thất bại
+     */
+    private void initFoodListFallback() {
         allFoodList = new ArrayList<>();
         allFoodList.add(new FoodDomain("Bánh mì Xúc Xích", "anh_1", "Bánh mì Việt Nam truyền thống với xúc xích tươi, rau sống giòn, dưa leo, cà rốt, ngò gai và sốt mayonnaise đặc biệt", 15000, "Bánh mì"));
         allFoodList.add(new FoodDomain("Bánh mì thịt nướng", "anh_30", "Bánh mì thịt nướng đặc biệt với thịt heo nướng than hoa thơm lừng, ướp gia vị đặc biệt, rau sống tươi, dưa leo, cà rốt và sốt mayonnaise. Thịt mềm, béo ngậy, hương vị đặc trưng miền Nam", 20000, "Bánh mì"));
@@ -115,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
         allFoodList.add(new FoodDomain("Hamburger phô mai", "anh_13", "Hamburger phô mai béo ngậy với thịt bò xay tươi, phô mai Cheddar và Mozzarella chảy, rau sống tươi, cà chua và sốt đặc biệt. Phô mai béo ngậy, thịt mềm, hương vị đậm đà.", 40000, "Hamburger"));
         allFoodList.add(new FoodDomain("Hamburger cá", "anh_10", "Hamburger cá hồi tươi với phi lê cá hồi nướng, rau sống tươi, cà chua, dưa leo và sốt tartar đặc biệt. Cá hồi tươi, mềm mịn, giàu omega-3, hương vị đặc biệt.", 45000, "Hamburger"));
 
-        foodList = new ArrayList<>(allFoodList);
+        filter();
     }
 
     private void setupRecyclerView() {

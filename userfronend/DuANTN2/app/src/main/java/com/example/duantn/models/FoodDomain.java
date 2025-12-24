@@ -3,6 +3,7 @@ package com.example.duantn.models;
 import java.io.Serializable;
 
 public class FoodDomain implements Serializable {
+    private Long productId; // ID sản phẩm từ backend
     private String title;
     private String pic;
     private String description;
@@ -11,6 +12,17 @@ public class FoodDomain implements Serializable {
     private String category;
 
     public FoodDomain(String title, String pic, String description, double fee, String category) {
+        this.title = title;
+        this.pic = pic;
+        this.description = description;
+        this.fee = fee;
+        this.numberInCart = 0;
+        this.category = category;
+        this.productId = null;
+    }
+
+    public FoodDomain(Long productId, String title, String pic, String description, double fee, String category) {
+        this.productId = productId;
         this.title = title;
         this.pic = pic;
         this.description = description;
@@ -49,5 +61,13 @@ public class FoodDomain implements Serializable {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 }

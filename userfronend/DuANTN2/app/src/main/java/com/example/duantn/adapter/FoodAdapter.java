@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.duantn.FoodDetailActivity;
 import com.example.duantn.R;
 import com.example.duantn.models.FoodDomain;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -40,9 +41,32 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.ViewHolder> {
         holder.titleText.setText(food.getTitle());
         holder.feeText.setText(String.format("%.0fđ", food.getFee()));
 
-        // Load image
-        int imageResId = context.getResources().getIdentifier(food.getPic(), "drawable", context.getPackageName());
-        holder.imageView.setImageResource(imageResId);
+        // Load ảnh - hỗ trợ cả URL và resource drawable
+        String imagePath = food.getPic();
+        if (imagePath != null && !imagePath.isEmpty()) {
+            // Nếu là URL từ backend
+            if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+                Picasso.get()
+                        .load(imagePath)
+                        .placeholder(R.drawable.ic_launcher_bg)
+                        .error(R.drawable.ic_launcher_bg)
+                        .into(holder.imageView);
+            } else {
+                // Nếu là tên resource drawable (ví dụ: "anh_1")
+                try {
+                    int imageResId = context.getResources().getIdentifier(imagePath, "drawable", context.getPackageName());
+                    if (imageResId != 0) {
+                        holder.imageView.setImageResource(imageResId);
+                    } else {
+                        holder.imageView.setImageResource(R.drawable.ic_launcher_bg);
+                    }
+                } catch (Exception e) {
+                    holder.imageView.setImageResource(R.drawable.ic_launcher_bg);
+                }
+            }
+        } else {
+            holder.imageView.setImageResource(R.drawable.ic_launcher_bg);
+        }
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, FoodDetailActivity.class);

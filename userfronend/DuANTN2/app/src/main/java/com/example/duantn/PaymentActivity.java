@@ -2,19 +2,28 @@ package com.example.duantn;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.duantn.helper.ManagmentCart;
 import com.example.duantn.helper.OrderController;
+import com.example.duantn.helper.OrderMapper;
 import com.example.duantn.helper.TableManager;
+import com.example.duantn.interface_api.OrderApi;
 import com.example.duantn.models.FoodDomain;
 import com.example.duantn.models.OrderDomain;
+import com.example.duantn.models.order.CreateOrderRequest;
+import com.example.duantn.models.order.ResponseOrder;
+import com.example.duantn.retrofit.RetrofitClient;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PaymentActivity extends AppCompatActivity {
 
@@ -28,6 +37,7 @@ public class PaymentActivity extends AppCompatActivity {
     private ManagmentCart managmentCart;
     private TableManager tableManager;
     private OrderController orderController;
+    private OrderApi orderApi;
     private double totalAmount;
     private String selectedPaymentMethod = "";
     private String note = ""; // Ghi chú từ CartActivity
@@ -40,6 +50,7 @@ public class PaymentActivity extends AppCompatActivity {
         managmentCart = new ManagmentCart(this);
         tableManager = new TableManager(this);
         orderController = new OrderController(this);
+        orderApi = RetrofitClient.getRetrofitInstance().create(OrderApi.class);
         totalAmount = getIntent().getDoubleExtra("total_amount", 0);
         note = getIntent().getStringExtra("note"); // Lấy ghi chú nếu có
 
@@ -143,29 +154,99 @@ public class PaymentActivity extends AppCompatActivity {
         confirmPaymentBtn.setEnabled(false);
         confirmPaymentBtn.setText("ĐANG XỬ LÝ...");
 
-        new android.os.Handler().postDelayed(() -> {
-            if (selectedPaymentMethod.equals("Tiền mặt")) {
-                Toast.makeText(this, "Thanh toán tiền mặt thành công (demo)!", Toast.LENGTH_SHORT).show();
-            } else if (selectedPaymentMethod.equals("Thẻ tín dụng/ghi nợ")) {
-                Toast.makeText(this, "Thanh toán thẻ thành công (demo)!", Toast.LENGTH_SHORT).show();
-            } else if (selectedPaymentMethod.equals("Ví MoMo")) {
-                Toast.makeText(this, "Vui lòng quét mã QR MoMo để hoàn tất (demo)!", Toast.LENGTH_SHORT).show();
-            }
-            
-            // Lưu đơn hàng đã thanh toán
-            savePaidOrder();
-            
-            managmentCart.clearCart();
-            tableManager.clearTableInfo(); // Xóa thông tin bàn sau khi thanh toán
-            Intent intent = new Intent(PaymentActivity.this, OrderSuccessActivity.class);
-            intent.putExtra("order_amount", totalAmount);
-            intent.putExtra("payment_method", selectedPaymentMethod);
-            startActivity(intent);
-            finish();
-        }, 1500);
+        // Tạo đơn hàng và gửi lên backend
+        createOrderOnBackend();
     }
 
-    private void savePaidOrder() {
+    /**
+     * Tạo đơn hàng trên backend
+     */
+    private void createOrderOnBackend() {
+        ArrayList<FoodDomain> cartItems = managmentCart.getListCart();
+        if (cartItems.isEmpty()) {
+            Toast.makeText(this, "Giỏ hàng trống!", Toast.LENGTH_SHORT).show();
+            confirmPaymentBtn.setEnabled(true);
+            confirmPaymentBtn.setText("XÁC NHẬN THANH TOÁN");
+            return;
+        }
+
+        // Lấy thông tin bàn
+        String tableNumber = tableManager.getTableNumber();
+        String orderType = tableManager.getOrderType();
+
+        // Tạo OrderDomain tạm để dùng cho mapper
+        OrderDomain tempOrder = new OrderDomain();
+        tempOrder.setTableNumber(tableNumber);
+        tempOrder.setOrderType(orderType);
+        tempOrder.setPaymentMethod(selectedPaymentMethod);
+        tempOrder.setNote(note != null ? note : "");
+
+        // Chuyển đổi sang CreateOrderRequest
+        CreateOrderRequest orderRequest = OrderMapper.toCreateOrderRequest(tempOrder, cartItems);
+
+        // Gửi request lên backend
+        Call<ResponseOrder> call = orderApi.createOrder(orderRequest);
+        call.enqueue(new Callback<ResponseOrder>() {
+            @Override
+            public void onResponse(Call<ResponseOrder> call, Response<ResponseOrder> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ResponseOrder responseOrder = response.body();
+                    
+                    // Hiển thị thông báo thanh toán thành công
+                    if (selectedPaymentMethod.equals("Tiền mặt")) {
+                        Toast.makeText(PaymentActivity.this, "Thanh toán tiền mặt thành công!", Toast.LENGTH_SHORT).show();
+                    } else if (selectedPaymentMethod.equals("Thẻ tín dụng/ghi nợ")) {
+                        Toast.makeText(PaymentActivity.this, "Thanh toán thẻ thành công!", Toast.LENGTH_SHORT).show();
+                    } else if (selectedPaymentMethod.equals("Ví MoMo")) {
+                        Toast.makeText(PaymentActivity.this, "Vui lòng quét mã QR MoMo để hoàn tất!", Toast.LENGTH_SHORT).show();
+                    }
+                    
+                    // Chuyển đổi ResponseOrder sang OrderDomain và lưu local
+                    OrderDomain savedOrder = OrderMapper.toOrderDomain(responseOrder);
+                    orderController.addOrder(savedOrder);
+                    
+                    // Xóa giỏ hàng và thông tin bàn
+                    managmentCart.clearCart();
+                    tableManager.clearTableInfo();
+                    
+                    // Chuyển đến màn hình thành công
+                    Intent intent = new Intent(PaymentActivity.this, OrderSuccessActivity.class);
+                    intent.putExtra("order_amount", totalAmount);
+                    intent.putExtra("payment_method", selectedPaymentMethod);
+                    intent.putExtra("order_id", responseOrder.getOrderId());
+                    startActivity(intent);
+                    finish();
+                } else {
+                    // API trả về lỗi
+                    Log.e("PaymentActivity", "Failed to create order: " + response.code());
+                    Toast.makeText(PaymentActivity.this, "Không thể tạo đơn hàng. Mã lỗi: " + response.code(), Toast.LENGTH_SHORT).show();
+                    
+                    // Fallback: lưu local nếu backend thất bại
+                    savePaidOrderLocal();
+                    
+                    confirmPaymentBtn.setEnabled(true);
+                    confirmPaymentBtn.setText("XÁC NHẬN THANH TOÁN");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseOrder> call, Throwable t) {
+                Log.e("PaymentActivity", "Error creating order", t);
+                Toast.makeText(PaymentActivity.this, "Lỗi kết nối: " + t.getMessage() + ". Đã lưu đơn hàng local.", Toast.LENGTH_LONG).show();
+                
+                // Fallback: lưu local nếu không kết nối được backend
+                savePaidOrderLocal();
+                
+                confirmPaymentBtn.setEnabled(true);
+                confirmPaymentBtn.setText("XÁC NHẬN THANH TOÁN");
+            }
+        });
+    }
+
+    /**
+     * Lưu đơn hàng local (fallback khi không kết nối được backend)
+     */
+    private void savePaidOrderLocal() {
         ArrayList<FoodDomain> cartItems = managmentCart.getListCart();
         if (cartItems.isEmpty()) {
             return;
@@ -204,5 +285,17 @@ public class PaymentActivity extends AppCompatActivity {
 
         // Lưu đơn hàng
         orderController.addOrder(paidOrder);
+        
+        // Xóa giỏ hàng và thông tin bàn
+        managmentCart.clearCart();
+        tableManager.clearTableInfo();
+        
+        // Chuyển đến màn hình thành công
+        Intent intent = new Intent(PaymentActivity.this, OrderSuccessActivity.class);
+        intent.putExtra("order_amount", totalAmount);
+        intent.putExtra("payment_method", selectedPaymentMethod);
+        startActivity(intent);
+        finish();
     }
+
 }

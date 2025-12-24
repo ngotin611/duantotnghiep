@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.duantn.models.FoodDomain;
 import com.example.duantn.helper.ManagmentCart;
+import com.squareup.picasso.Picasso;
 
 public class FoodDetailActivity extends AppCompatActivity {
 
@@ -55,9 +56,31 @@ public class FoodDetailActivity extends AppCompatActivity {
             descriptionTxt.setText(foodDomain.getDescription());
             numberOrderTxt.setText(String.valueOf(numberOrder));
 
-            int imageResId = getResources().getIdentifier(foodDomain.getPic(), "drawable", getPackageName());
-            if (imageResId != 0) {
-                foodPic.setImageResource(imageResId);
+            // Load ảnh - hỗ trợ cả URL và resource drawable
+            String imagePath = foodDomain.getPic();
+            if (imagePath != null && !imagePath.isEmpty()) {
+                // Nếu là URL từ backend
+                if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+                    Picasso.get()
+                            .load(imagePath)
+                            .placeholder(R.drawable.ic_launcher_bg)
+                            .error(R.drawable.ic_launcher_bg)
+                            .into(foodPic);
+                } else {
+                    // Nếu là tên resource drawable (ví dụ: "anh_1")
+                    try {
+                        int imageResId = getResources().getIdentifier(imagePath, "drawable", getPackageName());
+                        if (imageResId != 0) {
+                            foodPic.setImageResource(imageResId);
+                        } else {
+                            foodPic.setImageResource(R.drawable.ic_launcher_bg);
+                        }
+                    } catch (Exception e) {
+                        foodPic.setImageResource(R.drawable.ic_launcher_bg);
+                    }
+                }
+            } else {
+                foodPic.setImageResource(R.drawable.ic_launcher_bg);
             }
         }
     }

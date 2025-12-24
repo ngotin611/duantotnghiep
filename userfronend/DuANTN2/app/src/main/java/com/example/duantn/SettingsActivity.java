@@ -86,9 +86,11 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void loadSettings() {
-        notificationSwitch.setChecked(true);
-        soundSwitch.setChecked(true);
-        twoFactorSwitch.setChecked(false);
+        // Load cài đặt từ SharedPreferences, mặc định nếu chưa có
+        android.content.SharedPreferences prefs = getSharedPreferences("app_settings", MODE_PRIVATE);
+        notificationSwitch.setChecked(prefs.getBoolean("notifications_enabled", true));
+        soundSwitch.setChecked(prefs.getBoolean("sound_enabled", true));
+        twoFactorSwitch.setChecked(prefs.getBoolean("two_factor_enabled", false));
     }
 
     private void showLanguageDialog() {
@@ -144,15 +146,24 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void saveNotificationSetting(boolean enabled) {
-        // TODO: Lưu cài đặt thông báo vào SharedPreferences
+        getSharedPreferences("app_settings", MODE_PRIVATE)
+                .edit()
+                .putBoolean("notifications_enabled", enabled)
+                .apply();
     }
 
     private void saveSoundSetting(boolean enabled) {
-        // TODO: Lưu cài đặt âm thanh vào SharedPreferences
+        getSharedPreferences("app_settings", MODE_PRIVATE)
+                .edit()
+                .putBoolean("sound_enabled", enabled)
+                .apply();
     }
 
     private void saveTwoFactorSetting(boolean enabled) {
-        // TODO: Lưu cài đặt xác thực 2 yếu tố vào SharedPreferences
+        getSharedPreferences("app_settings", MODE_PRIVATE)
+                .edit()
+                .putBoolean("two_factor_enabled", enabled)
+                .apply();
     }
 
     private void setupBottomNavigation() {
